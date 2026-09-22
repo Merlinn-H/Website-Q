@@ -1,0 +1,291 @@
+# Quince Quip: portfolio website
+
+The portfolio site for Quince Quip. It has a gallery, one page per artwork, an About page, a
+Contact page and three legal pages (Privacy, Cookies, Legal). It sells nothing itself: it links out
+to Etsy for original works and to the print shop for prints.
+
+It is built with [Astro](https://astro.build) and is designed to be hosted on
+[Vercel](https://vercel.com). You do not need to know how to code to add works or fill in the
+details: most changes mean editing a small text file and saving it.
+
+**Contents**
+
+1. [Before you start](#1-before-you-start)
+2. [Seeing the site on your computer](#2-seeing-the-site-on-your-computer)
+3. [Adding a work](#3-adding-a-work)
+4. [Changing colours and fonts](#4-changing-colours-and-fonts)
+5. [Filling in the placeholders](#5-filling-in-the-placeholders)
+6. [The legal pages and the "Template" banner](#6-the-legal-pages-and-the-template-banner)
+7. [Putting the site online with Vercel](#7-putting-the-site-online-with-vercel)
+8. [Attaching your own domain later](#8-attaching-your-own-domain-later)
+9. [Where things are](#9-where-things-are)
+
+---
+
+## 1. Before you start
+
+You need two free programs:
+
+- **Node.js**, version 22.12 or newer. Download the "LTS" version from
+  [nodejs.org](https://nodejs.org) and install it.
+- **A text editor.** [Visual Studio Code](https://code.visualstudio.com) works well.
+
+Open the project folder in Visual Studio Code, then open a terminal inside it
+(menu **Terminal → New Terminal**). The first time only, type this and press Enter:
+
+```bash
+npm install
+```
+
+This downloads the parts the site is built from. It creates a `node_modules` folder, which you can
+ignore.
+
+## 2. Seeing the site on your computer
+
+```bash
+npm run dev
+```
+
+Then open <http://localhost:4321> in your browser. While this runs, the page updates every time you
+save a file. Press `Ctrl + C` in the terminal to stop it.
+
+Before putting changes online, check that everything builds:
+
+```bash
+npm run build
+```
+
+If something is wrong (a missing image, a typing mistake in a work's details), the build stops and
+names the file to fix. `npm run preview` then shows the finished site exactly as it will be online.
+
+## 3. Adding a work
+
+Each work lives in its own folder inside `src/content/works/`.
+
+1. **Create a folder** in `src/content/works/`. Its name becomes the web address of the work, so use
+   lower-case letters, numbers and hyphens, for example `src/content/works/example-title/` becomes
+   `/works/example-title/`.
+2. **Put one image in the folder.** JPG, PNG, WebP, AVIF or TIFF, with any file name. Exactly one
+   image per folder. Use your full-resolution file (ideally at least 2,400 pixels on the longest
+   side, in the sRGB colour profile): the site makes the smaller versions itself and never crops it,
+   whatever its shape.
+3. **Create a file called `index.md`** in the same folder, and copy this into it:
+
+   ```md
+   ---
+   title: "Example title"
+   year: 2026
+   medium: "Example medium"
+   dimensions: "40 × 50 cm"
+   featured: false
+   order: 7
+   status: available
+   etsyUrl: "https://www.etsy.com/listing/123456789/example-title"
+   printsUrl: "https://example.com/prints/example-title"
+   ---
+   ```
+
+   Then replace the example values with the real ones. Keep the two `---` lines. Put text values
+   between straight double quotes.
+
+What each line does:
+
+| Line | What to write |
+| --- | --- |
+| `title` | The title. It is also read aloud to blind visitors as the description of the image, so it is required. |
+| `year` | A year (`2026`) or text in quotes (`"2025 to 2026"`). |
+| `medium` | The medium, in quotes. |
+| `dimensions` | Optional. Delete the whole line if the work has no physical size. |
+| `featured` | `true` for the one work that opens the gallery full screen, `false` for the others. If several say `true`, the one with the lowest `order` is used. If none does, the first work is used. |
+| `order` | A number. Works appear in the gallery, and in Previous / Next on the work pages, from the lowest number to the highest. |
+| `status` | `available`, `sold` or `not-for-sale`. |
+| `etsyUrl` | Optional. The Etsy listing of the original. The **Original on Etsy** button only appears while `status` is `available`. |
+| `printsUrl` | Optional. The page where prints of this work can be ordered. The **Prints** button appears whenever this line exists, including when the original is sold. |
+
+Web addresses must be complete, starting with `https://`. Leave a line out entirely rather than
+leaving it empty.
+
+When `status` is `sold`, the work page shows "Sold" (with a small dot, the gallery convention) and
+keeps the Prints button if there is one.
+
+The site deliberately shows no text about a work beyond these details. Anything written below the
+second `---` line is ignored.
+
+**To remove a work**, delete its folder.
+
+**The six placeholder works** (`src/content/works/placeholder-2-3/` and the five others) exist only
+to show how different shapes of image behave. Delete those six folders once your own works are in.
+
+## 4. Changing colours and fonts
+
+### Colours, type sizes and spacing
+
+All of these live in one file: **`src/styles/tokens.css`**. Every value there is a provisional
+proposal. Change the hexadecimal colour codes (such as `#0f0d0b`) and save.
+
+- `--colour-bg`: the warm near-black background.
+- `--colour-bg-raised`: the background of the mobile menu and the full-screen viewer.
+- `--colour-text`: the bone-coloured text.
+- `--colour-text-muted`: labels and secondary text.
+- `--colour-accent`: the muted brass used for focus outlines, the current page and hover.
+
+Text must stay readable against the background: check any new pair of colours with a contrast
+checker such as the [WebAIM contrast checker](https://webaim.org/resources/contrastchecker/). Aim
+for at least 4.5:1. The current ratios are noted beside each colour in the file.
+
+Two more settings in the same file control the atmosphere:
+
+- `--halo-opacity`: the glow of each work's own colours in the dark around it (`0` turns it off).
+- `--grain-opacity`: the fine film grain on the dark background (`0` turns it off).
+
+Neither ever covers or changes the artwork itself.
+
+### Fonts
+
+The two fonts are **Cormorant Garamond** (the serif for the name, titles and statement) and
+**Instrument Sans** (the sans serif for navigation, labels and body text). Both are free,
+open-licence fonts from [Fontsource](https://fontsource.org), and the files are served from your
+own site, so visitors' browsers never contact another company.
+
+To use a different font:
+
+1. Find it on [fontsource.org](https://fontsource.org) and note its package name, for example
+   `@fontsource/eb-garamond`.
+2. Install it from the terminal: `npm install @fontsource/eb-garamond`
+3. Open **`astro.config.mjs`**. In the `fonts` section, change the `name` to the new font's name
+   and change each `src` line to point at the new package's files. They are in
+   `node_modules/@fontsource/<font>/files/`; use the files whose names contain `latin-400-normal`,
+   `latin-400-italic` and so on, matching each `weight` and `style`.
+4. Save, then run `npm run dev` to check. Nothing in `tokens.css` needs to change.
+
+### The artist name
+
+The name shown in the header, on the gallery and in the footer is set in **`src/site.config.ts`**
+(`name: 'Quince Quip'`).
+
+## 5. Filling in the placeholders
+
+Anything the site does not know is written as `[PLACEHOLDER: ...]`. Until it is replaced, it shows
+on the site as plain text (web addresses and the email address are not turned into links until they
+are real), so nothing breaks in the meantime.
+
+| Where | Placeholder | What to write |
+| --- | --- | --- |
+| `src/site.config.ts` | `[PLACEHOLDER: one-sentence site description for search engines]` | One sentence shown in search results and link previews. |
+| `src/site.config.ts` | `[PLACEHOLDER: contact email]` | The public email address. It becomes a clickable email link. |
+| `src/site.config.ts` | `[PLACEHOLDER: Etsy shop URL]` | The full address of the Etsy shop. |
+| `src/site.config.ts` | `[PLACEHOLDER: Gelato prints URL]` | The full address where prints can be ordered. |
+| `src/site.config.ts` | `[PLACEHOLDER: trading name / legal identity]` | Who operates the site, for the Legal page. |
+| `src/site.config.ts` | `[PLACEHOLDER: contact]` | Contact details for the Legal page. |
+| `src/site.config.ts` | `[PLACEHOLDER: data controller name / legal identity]` | Who is responsible for personal data, for the Privacy page. |
+| `src/site.config.ts` | `[PLACEHOLDER: data controller contact details]` | How to reach them, for the Privacy page. |
+| `src/content/about/index.md` | `[PLACEHOLDER: artist statement]` | The statement, below the second `---` line. Separate paragraphs with an empty line. |
+| `src/content/about/index.md` | `[PLACEHOLDER: portrait description, read aloud by screen readers]` | Only needed if you add a portrait (see below). |
+| `src/pages/privacy.astro` | `[PLACEHOLDER: server log retention period under the Vercel plan in use]` | How long Vercel keeps server logs for your plan. |
+| `src/content/works/placeholder-*/index.md` | title, year, medium, dimensions, Etsy and prints addresses | Replace these works with your own (see section 3). |
+
+**The portrait on the About page** is optional and hidden by default, because the artist is
+anonymous. To show one, put a single image file in `src/content/about/` and describe it in the
+`portraitAlt` line of `src/content/about/index.md`. Remove the image to hide it again.
+
+**To find any placeholder left**, search the whole project for `[PLACEHOLDER` (in Visual Studio
+Code: **Edit → Find in Files**).
+
+## 6. The legal pages and the "Template" banner
+
+The Privacy, Cookies and Legal pages are templates written for UK law (the UK GDPR and the Data
+Protection Act 2018). They describe exactly what this site does today: no cookies, no analytics, no
+forms, no data collected by the site itself, hosting by Vercel (which processes server logs,
+including IP addresses), and links to Etsy and Gelato, which have their own policies. Have them
+reviewed before publishing. If you later add anything that collects data (analytics, a newsletter,
+a form, embedded videos), these pages must be updated.
+
+A banner at the top of each of the three pages reads "Template: to be reviewed before
+publication." To remove it once the pages have been reviewed, open **`src/site.config.ts`** and
+change:
+
+```ts
+showTemplateBanner: true,
+```
+
+to:
+
+```ts
+showTemplateBanner: false,
+```
+
+The wording of the pages themselves is in `src/pages/privacy.astro`, `src/pages/cookies.astro` and
+`src/pages/legal.astro`.
+
+## 7. Putting the site online with Vercel
+
+The site is published from GitHub (where the files are stored online) to Vercel (which hosts it).
+
+1. **Put the project on GitHub.** Create a free account at [github.com](https://github.com) and
+   install the free GitHub Desktop app. In GitHub Desktop, add the project folder as a repository,
+   then publish it (it can stay private). The `node_modules` and `dist` folders are left out
+   automatically.
+2. **Create the Vercel project.** Sign up at [vercel.com](https://vercel.com) using your GitHub
+   account, add a new project and import the repository. Vercel recognises Astro by itself: leave
+   the suggested settings as they are (framework preset Astro, output folder `dist`) and click
+   **Deploy**.
+3. **Visit the site.** When the build finishes, the site is live at an address ending in
+   `.vercel.app`, shown on the project page.
+4. **Check the address the site uses for itself.** Open `https://<your-address>.vercel.app/robots.txt`.
+   The last line must show your `.vercel.app` address. If it shows `localhost` instead, open the
+   project's **Settings → Environment Variables**, tick **Enable access to System Environment
+   Variables**, then redeploy (see below).
+
+From then on, every change you publish to GitHub (commit, then push, in GitHub Desktop) is built and
+put online automatically, usually within a few minutes. To rebuild without changing anything, open the
+project's **Deployments** page, open the latest one and choose **Redeploy**.
+
+**A note on Vercel plans.** Vercel's free Hobby plan is for non-commercial, personal use only, and
+Vercel's
+[fair use guidelines](https://vercel.com/docs/limits/fair-use-guidelines) count "advertising the
+sale of a product or service" as commercial use. As this site links to shops, check those
+guidelines and whether you need the paid Pro plan.
+
+## 8. Attaching your own domain later
+
+1. **Get a domain** from any domain registrar, or buy one through Vercel.
+2. In Vercel, open the project, then **Settings → Domains → Add Domain**, and type the domain in.
+3. Vercel then shows the DNS records to add at your registrar. Add them exactly as shown; the domain
+   starts working once they take effect (sometimes within minutes, sometimes a few hours). Vercel
+   provides the security certificate (https) itself.
+4. **Redeploy once** (Deployments → latest → Redeploy). The site builds its canonical links, sitemap
+   and link previews from its address, and after this rebuild it uses your domain instead of the
+   `.vercel.app` address. No file needs editing.
+
+If you add both `yourdomain.com` and `www.yourdomain.com`, Vercel hands the site the shorter one.
+If you want the `www` version used instead, go to **Settings → Environment Variables**, add a
+variable named `SITE_URL` with the value `https://www.yourdomain.com`, and redeploy.
+
+## 9. Where things are
+
+| Path | What it holds |
+| --- | --- |
+| `src/site.config.ts` | Name, description, contact details, legal details, the banner switch. |
+| `src/content/works/` | One folder per work: an image and `index.md`. |
+| `src/content/about/index.md` | The artist statement (and the optional portrait). |
+| `src/styles/tokens.css` | Colours, type sizes and spacing (provisional design tokens). |
+| `astro.config.mjs` | Fonts, image quality and the site address. |
+| `src/pages/` | One file per page: `index.astro` (gallery), `works/[slug].astro` (artwork pages), `about.astro`, `contact.astro`, `privacy.astro`, `cookies.astro`, `legal.astro`, `404.astro`, plus the sitemap and robots.txt. |
+| `src/components/`, `src/layouts/`, `src/scripts/` | The building blocks of the pages, smooth scrolling and the full-screen viewer. |
+| `public/` | The browser-tab icons. |
+| `vercel.json` | Tells browsers to keep the site's fingerprinted files cached, so repeat visits are fast. |
+
+**How the site behaves**, for reference: it works fully with JavaScript switched off; it sets no
+cookies and loads nothing from other companies; every image keeps its own proportions and is never
+cropped; tapping or clicking an artwork opens it full screen, where it can be zoomed.
+
+The gallery opens on the featured work with the name set around it. Each work glows softly with its
+own colours, comes out of the dark as it reaches the middle of the screen, and hangs left or right
+in turn beside its title and number (upright works) or across the full width (wide works). On a
+work page, an upright work hangs beside its label on large screens. In browsers that support page
+transitions (such as Chrome and Edge), the work you click grows into its own page; elsewhere the
+page simply changes. All movement (smooth scrolling, the light effects, the page
+transitions, the moving grain) is switched off for visitors whose device asks for reduced motion.
+Browsers that do not support an effect simply show the page without it.
+#   W e b s i t e - Q  
+ 
