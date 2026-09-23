@@ -301,7 +301,8 @@ hanging in front of the wall. Upright works hang left or right
 in turn beside their title and number; wide works take the full width. Each work is sized so that
 it fits on screen with its title, below the menu, and it settles gently into place: when scrolling
 stops close to a work, the page glides until the work sits in the middle of the screen. Stop
-between two works and the page stays where it is.
+between two works and the page stays where it is. The bottom of the page is a resting place too,
+so scrolling on past the last work always reaches the footer.
 
 A work page shows everything on one screen, with nothing to scroll, whatever the screen (phones
 held upright or sideways, tablets, computers): the work itself, as large as the space allows, its

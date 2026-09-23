@@ -69,6 +69,12 @@ html {
   scroll-snap-align: center;
 }
 
+/* On a page with works to settle on, the foot of the page is a resting place too, so the last
+ * work never keeps the visitor from reaching the footer. */
+body:has([data-snap]) .site-footer {
+  scroll-snap-align: end;
+}
+
 img,
 svg {
   display: block;

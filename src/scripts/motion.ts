@@ -32,6 +32,11 @@ function placeSnaps() {
     const value = el.dataset.snap === 'center' ? top + (el.offsetHeight - innerHeight - menu) / 2 : top - menu;
     snapPoints.push(snap.add(Math.max(0, Math.round(value))));
   }
+  // The foot of the page (the footer) is a resting place too, so the pull towards the last work
+  // never keeps the visitor from reaching it.
+  if (snapPoints.length) {
+    snapPoints.push(snap.add(Math.max(0, document.documentElement.scrollHeight - innerHeight)));
+  }
 }
 
 function applyMotionPreference() {
