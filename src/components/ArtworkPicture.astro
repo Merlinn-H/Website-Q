@@ -1,0 +1,29 @@
+---
+import { Picture } from 'astro:assets';
+import type { Work } from '../lib/works';
+
+interface Props {
+  work: Work;
+  /** Displayed width, so the browser downloads a file of the right size. */
+  sizes: string;
+  /** Load straight away with high priority: only for the main image at the top of a page. */
+  priority?: boolean;
+}
+
+const { work, sizes, priority = false } = Astro.props;
+
+// Resized copies made for every artwork. Sizes larger than the original are skipped.
+const widths = [480, 720, 960, 1280, 1600, 2000, 2560];
+---
+
+<Picture
+  src={work.image}
+  alt={work.data.title}
+  widths={widths}
+  sizes={sizes}
+  formats={['avif', 'webp']}
+  fallbackFormat="jpg"
+  width={Math.min(work.image.width, 1600)}
+  fit="contain"
+  priority={priority}
+/>

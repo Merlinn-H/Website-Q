@@ -1,0 +1,479 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ArtworkPicture from '../components/ArtworkPicture.astro';
+import Halo from '../components/Halo.astro';
+import { site } from '../site.config';
+import { getFeatured, getWorks, workPath } from '../lib/works';
+import { socialImageFor } from '../lib/social';
+
+const works = await getWorks();
+const featured = getFeatured(works);
+const socialImage = featured && (await socialImageFor(featured));
+
+const ratio = (value: number) => value.toFixed(4);
+
+// The name is set around the opening work. A one-word name sits bottom right; with more words,
+// the first sits top left and the rest bottom right.
+const words = site.name.trim().split(/\s+/);
+const nameParts =
+  words.length > 1
+    ? [
+        { text: words[0], place: 'start' },
+        { text: words.slice(1).join(' '), place: 'end' },
+      ]
+    : [{ text: words[0], place: 'end' }];
+const letters = Math.max(...nameParts.map((part) => part.text.length));
+---
+
+<BaseLayout socialImage={socialImage}>
+  <section
+    class="hero"
+    data-layout={featured?.shape === 'upright' ? 'sides' : 'stack'}
+    data-lines={nameParts.length}
+    style={`--ratio: ${featured ? ratio(featured.ratio) : 1}; --letters: ${letters}; --lines: ${nameParts.length}`}
+  >
+    <h1 class="hero-name">
+      {
+        nameParts.map((part, index) => (
+          <>
+            {index > 0 && ' '}
+            <span class={`hero-word hero-word--${part.place}`}>
+              <span>{part.text}</span>
+            </span>
+          </>
+        ))
+      }
+    </h1>
+    {
+      featured && (
+        <a class="hero-work" href={workPath(featured)} data-artwork-link>
+          <Halo work={featured} />
+          <ArtworkPicture
+            work={featured}
+            priority
+            sizes={`min(calc(100vw - 2rem), calc((100vh - 7.5rem) * ${ratio(featured.ratio)}))`}
+          />
+        </a>
+      )
+    }
+  </section>
+
+  <section class="sequence" aria-labelledby="works-heading">
+    <h2 id="works-heading" class="visually-hidden">Works</h2>
+    <ol class="works" role="list">
+      {
+        works.map((work, index) => (
+          <li
+            class="work"
+            data-reveal="fallback"
+            data-shape={work.shape}
+            data-side={index % 2 === 0 ? 'left' : 'right'}
+          >
+            <figure style={`--ratio: ${ratio(work.ratio)}`}>
+              <a class="work-link" href={workPath(work)} data-artwork-link>
+                <Halo work={work} />
+                <ArtworkPicture
+                  work={work}
+                  sizes={
+                    work.shape === 'upright'
+                      ? `(min-width: 64em) min(58vw, ${(82 * work.ratio).toFixed(2)}vh), min(calc(100vw - 2rem), ${(82 * work.ratio).toFixed(2)}vh)`
+                      : `min(calc(100vw - 2rem), ${(82 * work.ratio).toFixed(2)}vh)`
+                  }
+                />
+              </a>
+              <figcaption class="on-glow">
+                <span class="work-numeral" aria-hidden="true">
+                  {work.numeral}
+                </span>
+                <span class="work-title">{work.data.title}</span>
+                <span class="work-year label">{work.data.year}</span>
+              </figcaption>
+            </figure>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+</BaseLayout>
+
+<style>
+  /* ---------------------------------------------------------------------------------------
+     Opening screen. The featured work, whole and uncropped, glows in the dark, with the name
+     set around it: a one-word name bottom right; otherwise first word top left, the rest
+     bottom right. Every size below is worked out from the screen size, the work's proportions
+     and the length of the name, so nothing moves while loading and the name can never touch
+     the work.
+     - stack: the name sits above and/or below the work (phones, and wide works).
+     - sides: on wide screens an upright work takes the full height and the name sits beside it.
+     --------------------------------------------------------------------------------------- */
+  .hero {
+    --pad-bottom: clamp(1rem, 4vh, 2.5rem);
+    --gap: clamp(0.75rem, 2vh, 1.5rem);
+    --stage-h: calc(100vh - var(--page-top) - var(--pad-bottom));
+    /* Width of the longest word in em, estimated generously (a lone letter can be as wide as W). */
+    --word-em: max(var(--letters) * 0.46, 0.95);
+    --word-vh: 9vh;
+    --word-max: 11rem;
+    --word-max-sides: 12rem;
+    --word-size: min(var(--word-vh), var(--word-max), (100vw - 2 * var(--gutter)) / var(--word-em));
+    /* One line of the name plus its italic descenders (the tail of the Q, the p) and a gap. */
+    --band: calc(1.3 * var(--word-size) + var(--gap));
+    --work-w: min(100%, (var(--stage-h) - var(--lines) * var(--band)) * var(--ratio));
+
+    position: relative;
+    display: grid;
+    place-items: center;
+    height: 100vh;
+    height: 100svh;
+    min-height: 30rem;
+    padding: var(--page-top) var(--gutter) var(--pad-bottom);
+    overflow: clip;
+  }
+
+  @supports (height: 100svh) {
+    .hero {
+      --stage-h: calc(100svh - var(--page-top) - var(--pad-bottom));
+    }
+  }
+
+  /* A one-word name gets a single, larger line, and the work is centred in the space above it. */
+  .hero[data-lines='1'] {
+    --word-vh: 14vh;
+    --word-max: 14rem;
+    --word-max-sides: 16rem;
+
+    padding-bottom: calc(var(--pad-bottom) + var(--band));
+  }
+
+  @media (min-width: 64em) and (min-aspect-ratio: 3/2) {
+    .hero[data-layout='sides'] {
+      --side: calc(
+        (100vw - 2 * var(--gutter) - var(--stage-h) * var(--ratio)) / 2 - 2 * var(--gap)
+      );
+      --word-size: clamp(2rem, var(--side) / var(--word-em), var(--word-max-sides));
+      --work-w: min(100%, var(--stage-h) * var(--ratio));
+
+      padding-bottom: var(--pad-bottom);
+    }
+
+    /* The name hugs the work: first word against its top left edge, last (or only) word
+       against its bottom right edge. The middle column is exactly as wide as the work. */
+    .hero[data-layout='sides'] .hero-name {
+      display: grid;
+      grid-template-columns: 1fr var(--work-w) 1fr;
+      grid-template-rows: auto 1fr auto;
+      column-gap: calc(2 * var(--gap));
+    }
+
+    .hero[data-layout='sides'] .hero-word--start {
+      grid-column: 1;
+      grid-row: 1;
+      justify-self: end;
+    }
+
+    .hero[data-layout='sides'] .hero-word--end {
+      grid-column: 3;
+      grid-row: 3;
+      justify-self: start;
+      align-self: end;
+      margin-top: 0;
+    }
+  }
+
+  .hero-work {
+    position: relative;
+    isolation: isolate;
+    display: block;
+    width: var(--work-w);
+  }
+
+  .hero-work :global(img) {
+    width: 100%;
+    height: auto;
+    aspect-ratio: var(--ratio);
+    object-fit: contain;
+  }
+
+  .hero-name {
+    position: absolute;
+    inset: var(--page-top) var(--gutter) var(--pad-bottom);
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 0.3em;
+    font-size: var(--word-size);
+    font-style: italic;
+    line-height: 1;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+
+  .hero-word {
+    display: block;
+  }
+
+  .hero-word--start {
+    align-self: flex-start;
+  }
+
+  .hero-word--end {
+    align-self: flex-end;
+    margin-top: auto;
+  }
+
+  .hero-word > span {
+    display: block;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .hero-work :global(img) {
+      animation: lights-up 2.4s var(--ease-out) both;
+    }
+
+    .hero-work :global(.halo) {
+      animation: glow-up 3.2s var(--ease-out) both;
+    }
+
+    .hero-word > span {
+      animation: unveil 1.6s var(--ease-out) 0.3s both;
+    }
+
+    .hero-word--start + .hero-word--end > span {
+      animation-delay: 0.55s;
+    }
+  }
+
+  @keyframes lights-up {
+    from {
+      filter: brightness(0.35);
+    }
+  }
+
+  @keyframes glow-up {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @keyframes unveil {
+    from {
+      clip-path: inset(0 0 100% 0);
+      transform: translateY(35%);
+    }
+  }
+
+  /* ---------------------------------------------------------------------------------------
+     The sequence. Upright works hang left and right in turn, beside a large label; wide works
+     take the full width. Each keeps its own proportions and glows with its own colours.
+     --------------------------------------------------------------------------------------- */
+  .sequence {
+    padding: var(--gap-works) var(--gutter) 0;
+    overflow-x: clip;
+  }
+
+  .works {
+    display: grid;
+    gap: var(--gap-works);
+  }
+
+  figure {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .work-link {
+    position: relative;
+    isolation: isolate;
+    display: block;
+    justify-self: center;
+    width: min(100%, 82vh * var(--ratio));
+    width: min(100%, 82svh * var(--ratio));
+  }
+
+  .work-link :global(img) {
+    width: 100%;
+    height: auto;
+    aspect-ratio: var(--ratio);
+    object-fit: contain;
+  }
+
+  .work-link:hover :global(.halo) {
+    opacity: calc(var(--halo-opacity) * 1.6);
+  }
+
+  figcaption {
+    display: grid;
+    justify-items: start;
+    gap: 0.5rem;
+  }
+
+  .work[data-side='right'] figcaption {
+    justify-items: end;
+    text-align: right;
+  }
+
+  .work-numeral {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-style: italic;
+    line-height: 1;
+    color: var(--colour-accent);
+  }
+
+  .work-numeral::after {
+    content: '';
+    width: 2.5rem;
+    height: 1px;
+    background: currentColor;
+    opacity: 0.6;
+  }
+
+  .work[data-side='right'] .work-numeral {
+    flex-direction: row-reverse;
+  }
+
+  .work-title {
+    max-width: 14em;
+    font-family: var(--font-display);
+    font-size: clamp(1.875rem, 1.3rem + 2.4vw, 3.5rem);
+    font-style: italic;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+    transition: color 0.4s ease;
+  }
+
+  .work:has(.work-link:hover) .work-title {
+    color: var(--colour-accent);
+  }
+
+  @media (min-width: 64em) {
+    figure {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: var(--gutter);
+      align-items: end;
+    }
+
+    .work[data-shape='upright'] .work-link {
+      grid-column: 1 / span 7;
+      justify-self: end;
+    }
+
+    .work[data-shape='upright'] figcaption {
+      grid-column: 8 / span 5;
+      padding-bottom: 0.5rem;
+    }
+
+    .work[data-shape='upright'][data-side='right'] .work-link {
+      grid-column: 6 / span 7;
+      grid-row: 1;
+      justify-self: start;
+    }
+
+    .work[data-shape='upright'][data-side='right'] figcaption {
+      grid-column: 1 / span 5;
+      grid-row: 1;
+    }
+
+    .work[data-shape='wide'] .work-link {
+      grid-column: 1 / -1;
+    }
+
+    .work[data-shape='wide'] figcaption {
+      grid-column: 1 / span 7;
+    }
+
+    .work[data-shape='wide'][data-side='right'] figcaption {
+      grid-column: 6 / span 7;
+    }
+  }
+
+  /* Where the browser supports scroll-linked animation, each work comes out of the dark as it
+     reaches the middle of the screen and dims again as it leaves, like walking past spotlit
+     paintings. Elsewhere the gentle fade-in from global.css is used instead. */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .work {
+        view-timeline-name: --work;
+      }
+
+      .work-link {
+        animation: emerge linear both;
+        animation-timeline: --work;
+        animation-range: cover 0% cover 100%;
+      }
+
+      figcaption {
+        animation: caption-in linear both;
+        animation-timeline: --work;
+        animation-range: entry 40% cover 45%;
+      }
+
+      .hero-work {
+        animation: hero-out linear both;
+        animation-timeline: scroll(root);
+        animation-range: 0 100vh;
+      }
+
+      .hero-word {
+        animation: drift-up linear both;
+        animation-timeline: scroll(root);
+        animation-range: 0 100vh;
+      }
+
+      .hero-word--end {
+        animation-name: drift-down;
+      }
+    }
+  }
+
+  @keyframes emerge {
+    0% {
+      filter: brightness(0.25);
+      transform: scale(0.95);
+    }
+
+    32%,
+    68% {
+      filter: none;
+      transform: none;
+    }
+
+    100% {
+      filter: brightness(0.5);
+      transform: scale(0.98);
+    }
+  }
+
+  @keyframes caption-in {
+    from {
+      opacity: 0;
+      transform: translateY(1.5rem);
+    }
+  }
+
+  @keyframes hero-out {
+    to {
+      filter: brightness(0.4);
+      transform: scale(0.94);
+    }
+  }
+
+  @keyframes drift-up {
+    to {
+      opacity: 0.25;
+      transform: translateY(-10vh);
+    }
+  }
+
+  @keyframes drift-down {
+    to {
+      opacity: 0.25;
+      transform: translateY(10vh);
+    }
+  }
+</style>

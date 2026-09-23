@@ -1,0 +1,61 @@
+---
+import { site } from '../site.config';
+
+const path = Astro.url.pathname;
+const links = [
+  { href: '/privacy/', label: 'Privacy' },
+  { href: '/cookies/', label: 'Cookies' },
+  { href: '/legal/', label: 'Legal' },
+];
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <nav aria-label="Legal">
+    <ul role="list">
+      {
+        links.map(({ href, label }) => (
+          <li>
+            <a href={href} aria-current={path === href ? 'page' : undefined}>
+              {label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+  <p>© {year} {site.name}</p>
+</footer>
+
+<style>
+  .site-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem 2rem;
+    margin-top: clamp(6rem, 16vh, 10rem);
+    padding: 2rem var(--gutter) 2.5rem;
+    border-top: 1px solid var(--colour-line);
+    font-size: var(--text-label);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--colour-text-muted);
+  }
+
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 2rem;
+  }
+
+  a {
+    display: inline-block;
+    padding-block: 0.5rem;
+    text-decoration: none;
+  }
+
+  a[aria-current='page'] {
+    color: var(--colour-text);
+  }
+</style>

@@ -1,0 +1,86 @@
+---
+import LegalLayout from '../layouts/LegalLayout.astro';
+import { site } from '../site.config';
+
+const { controllerIdentity, controllerContact } = site.legal;
+---
+
+<LegalLayout
+  title="Privacy Policy"
+  description="How this website handles personal data under the UK GDPR and the Data Protection Act 2018."
+>
+  <p>
+    This policy explains how personal data is handled when you visit this website, in line with the UK
+    General Data Protection Regulation (UK GDPR) and the Data Protection Act 2018.
+  </p>
+
+  <h2>Who is responsible</h2>
+  <p>
+    The data controller for this website is {controllerIdentity}.
+    You can contact the controller at {controllerContact}.
+  </p>
+
+  <h2>What this website does not do</h2>
+  <ul>
+    <li>It does not set cookies.</li>
+    <li>It does not use analytics, tracking pixels, advertising tools or any other tracking.</li>
+    <li>It has no forms, accounts, comments or newsletter sign-up.</li>
+    <li>
+      It loads nothing from other websites while you browse: its fonts and images are served from this
+      website.
+    </li>
+  </ul>
+  <p>The website itself therefore does not collect or store any personal data about you.</p>
+
+  <h2>Hosting and server logs</h2>
+  <p>
+    This website is hosted by Vercel Inc. (see the <a href="/legal/">Legal notice</a>). To deliver each
+    page, Vercel's servers necessarily receive your IP address and basic technical details of the request,
+    such as the page requested, the time of the request and the type of browser. Vercel processes this
+    data, including in server logs, as a processor acting on behalf of the controller, to deliver the
+    website and to keep it secure.
+  </p>
+  <p>
+    The lawful basis for this processing is legitimate interests (<span class="nowrap">Article 6(1)(f)</span> UK GDPR): showing you
+    the website you asked for and protecting it against misuse.
+  </p>
+  <p>
+    Vercel Inc. is based in the United States, so this data may be processed outside the UK. Vercel's
+    Data Processing Addendum provides for such transfers using the UK International Data Transfer
+    Addendum to the EU Standard Contractual Clauses.
+  </p>
+  <p>Server logs are kept for [PLACEHOLDER: server log retention period under the Vercel plan in use].</p>
+
+  <h2>Links to Etsy and Gelato</h2>
+  <p>
+    Original works are sold on Etsy and prints are ordered through Gelato. When you follow a link to
+    either, you leave this website. Etsy and Gelato are independent third parties with their own privacy
+    and cookie policies, which apply to anything you do on their websites.
+  </p>
+
+  <h2>Your rights</h2>
+  <p>Under the UK GDPR you have the right to:</p>
+  <ul>
+    <li>be informed about how your personal data is used;</li>
+    <li>access your personal data;</li>
+    <li>have inaccurate personal data corrected;</li>
+    <li>have your personal data erased;</li>
+    <li>restrict how your personal data is used;</li>
+    <li>object to the use of your personal data;</li>
+    <li>data portability, where it applies.</li>
+  </ul>
+  <p>
+    To exercise any of these rights, contact the controller at {controllerContact}. Because the website
+    itself holds no personal data, a request can only concern the server logs processed by Vercel.
+  </p>
+
+  <h2>Complaints</h2>
+  <p>
+    You can raise a concern about how your personal data has been handled with the controller, using
+    the contact details above.
+  </p>
+  <p>
+    You also have the right to complain to the Information Commissioner's Office (ICO), the UK
+    regulator for data protection, online at <a href="https://ico.org.uk/make-a-complaint/">ico.org.uk/make-a-complaint</a> or by telephone on 0303 123 1113.
+  </p>
+</LegalLayout>

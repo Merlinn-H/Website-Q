@@ -1,0 +1,129 @@
+---
+// Full-screen view of an artwork, opened from the image on its page (see src/scripts/viewer.ts).
+// Without JavaScript this dialog is never shown and the image link opens the large file instead.
+interface Props {
+  title: string;
+  /** Width divided by height of the artwork. */
+  ratio: string;
+}
+
+const { title, ratio } = Astro.props;
+---
+
+<dialog class="viewer" data-viewer data-lenis-prevent aria-label={`${title}, full-screen view`} style={`--ratio: ${ratio}`}>
+  <div class="viewer-bar">
+    <button class="viewer-button label" type="button" data-viewer-zoom aria-pressed="false">Zoom</button>
+    <button class="viewer-button label" type="button" data-viewer-close autofocus>Close</button>
+  </div>
+  <div class="viewer-stage" data-viewer-stage role="group" aria-label="Artwork"></div>
+</dialog>
+
+<style>
+  .viewer {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    background: var(--colour-bg);
+    color: var(--colour-text);
+  }
+
+  .viewer[open] {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  .viewer::backdrop {
+    background: var(--colour-bg);
+  }
+
+  .viewer-bar {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 2rem;
+    height: var(--header-h);
+    padding-inline: var(--gutter);
+  }
+
+  .viewer-button {
+    min-height: 2.75rem;
+    padding: 0.5rem 0;
+    border: 0;
+    background: none;
+    color: var(--colour-text);
+    cursor: pointer;
+  }
+
+  .viewer-button:hover,
+  .viewer-button[aria-pressed='true'] {
+    color: var(--colour-accent);
+  }
+
+  /* Fitted: the whole work inside the screen. Zoomed: a larger copy the visitor can pan. */
+  .viewer-stage {
+    position: relative;
+    display: flex;
+    overflow: hidden;
+    padding: 0 var(--gutter) var(--gutter);
+    container-type: size;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  .viewer-stage :global(img) {
+    margin: auto;
+    width: min(100cqw, 100cqh * var(--ratio));
+    max-width: none;
+    height: auto;
+    aspect-ratio: var(--ratio);
+    cursor: zoom-in;
+  }
+
+  @supports not (width: 1cqh) {
+    .viewer-stage :global(img) {
+      width: auto;
+      max-width: 100%;
+      max-height: 100%;
+    }
+  }
+
+  .viewer.is-zoomed .viewer-stage {
+    overflow: auto;
+    overscroll-behavior: contain;
+    padding: 0;
+    cursor: grab;
+  }
+
+  .viewer.is-zoomed .viewer-stage :global(img) {
+    width: var(--zoom-width);
+    max-width: none;
+    max-height: none;
+    cursor: grab;
+  }
+
+  .viewer-stage.is-dragging,
+  .viewer-stage.is-dragging :global(img) {
+    cursor: grabbing;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .viewer[open] {
+      animation: viewer-in 0.4s var(--ease-out);
+    }
+  }
+
+  @keyframes viewer-in {
+    from {
+      opacity: 0;
+    }
+  }
+</style>
+
+<script>
+  import '../scripts/viewer';
+</script>

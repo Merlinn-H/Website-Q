@@ -1,0 +1,28 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Page not found" noindex>
+  <div class="not-found">
+    <h1>Page not found</h1>
+    <p>The page you were looking for could not be found.</p>
+    <p><a href="/">Return to the gallery</a></p>
+  </div>
+</BaseLayout>
+
+<style>
+  .not-found {
+    max-width: var(--page-max);
+    margin-inline: auto;
+    padding: calc(var(--page-top) + clamp(3rem, 16vh, 10rem)) var(--gutter) 0;
+  }
+
+  h1 {
+    font-size: var(--text-title);
+    margin-bottom: 1.5rem;
+  }
+
+  p + p {
+    margin-top: 1rem;
+  }
+</style>

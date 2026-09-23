@@ -1,0 +1,76 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import { site } from '../site.config';
+
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<BaseLayout title={title} description={description}>
+  <article class="legal">
+    {
+      site.legal.showTemplateBanner && (
+        <p class="template-banner" role="note">
+          Template: to be reviewed before publication.
+        </p>
+      )
+    }
+    <h1>{title}</h1>
+    <div class="prose">
+      <slot />
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .legal {
+    max-width: calc(var(--measure) + 2 * var(--gutter));
+    margin-inline: auto;
+    padding: calc(var(--page-top) + clamp(2rem, 8vh, 5rem)) var(--gutter) 0;
+  }
+
+  .template-banner {
+    margin-bottom: 3rem;
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--colour-accent);
+    color: var(--colour-accent);
+    font-weight: 500;
+    line-height: 1.5;
+  }
+
+  h1 {
+    font-size: var(--text-title);
+    margin-bottom: clamp(2.5rem, 6vh, 4rem);
+  }
+
+  .prose :global(h2) {
+    margin: 3rem 0 1rem;
+    font-size: clamp(1.5rem, 1.3rem + 0.8vw, 2rem);
+  }
+
+  .prose :global(p),
+  .prose :global(ul),
+  .prose :global(address) {
+    margin-bottom: 1rem;
+  }
+
+  .prose :global(ul) {
+    padding-left: 1.25rem;
+  }
+
+  .prose :global(li + li) {
+    margin-top: 0.375rem;
+  }
+
+  .prose :global(li::marker) {
+    color: var(--colour-text-muted);
+  }
+
+  .prose :global(address) {
+    font-style: normal;
+  }
+</style>

@@ -1,0 +1,98 @@
+---
+import { Font } from 'astro:assets';
+import 'lenis/dist/lenis.css';
+import '../styles/tokens.css';
+import '../styles/global.css';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import { site } from '../site.config';
+
+export interface SocialImage {
+  src: string;
+  width: number;
+  height: number;
+  alt: string;
+}
+
+interface Props {
+  /** Page name, shown before the artist name in the browser tab. Omit on the gallery. */
+  title?: string;
+  description?: string;
+  socialImage?: SocialImage;
+  /** Keep the page out of search results (used by the 404 page). */
+  noindex?: boolean;
+}
+
+const { title, description = site.description, socialImage, noindex = false } = Astro.props;
+
+const documentTitle = title ? `${title} · ${site.name}` : site.name;
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const socialImageUrl = socialImage && new URL(socialImage.src, Astro.site).href;
+---
+
+<!doctype html>
+<html lang="en-GB">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <title>{documentTitle}</title>
+    <meta name="description" content={description} />
+    {noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={canonical} />}
+
+    <script is:inline>
+      // Page transitions, way back: arriving on the gallery from a work page, that work (if on
+      // screen) grows back into place. Must run before the page first appears, hence inline here.
+      addEventListener('pagereveal', (event) => {
+        const links = [...document.querySelectorAll('a[data-artwork-link]')];
+        for (const link of links) link.style.removeProperty('view-transition-name');
+        const from = window.navigation?.activation?.from?.url;
+        if (!event.viewTransition || !from) return;
+        const path = new URL(from).pathname;
+        const match = links.find((link) => {
+          const box = link.getBoundingClientRect();
+          return link.pathname === path && box.bottom > 0 && box.top < innerHeight;
+        });
+        if (!match) return;
+        match.style.viewTransitionName = 'artwork';
+        event.viewTransition.finished.finally(() => match.style.removeProperty('view-transition-name'));
+      });
+    </script>
+    <Font cssVariable="--font-display-face" preload={[{ weight: 400, style: 'italic' }]} />
+    <Font cssVariable="--font-ui-face" preload={[{ weight: 500, style: 'normal' }]} />
+
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:locale" content="en_GB" />
+    <meta property="og:title" content={title ?? site.name} />
+    <meta property="og:description" content={description} />
+    {!noindex && <meta property="og:url" content={canonical} />}
+    {
+      socialImage && (
+        <>
+          <meta property="og:image" content={socialImageUrl} />
+          <meta property="og:image:width" content={String(socialImage.width)} />
+          <meta property="og:image:height" content={String(socialImage.height)} />
+          <meta property="og:image:alt" content={socialImage.alt} />
+          <meta name="twitter:card" content="summary_large_image" />
+        </>
+      )
+    }
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <SiteHeader />
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <SiteFooter />
+
+    <script>
+      import '../scripts/motion';
+    </script>
+  </body>
+</html>

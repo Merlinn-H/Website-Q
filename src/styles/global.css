@@ -1,0 +1,346 @@
+/* Base ---------------------------------------------------------------------------------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  color-scheme: dark;
+  background: var(--colour-bg);
+  color: var(--colour-text);
+  font-family: var(--font-ui);
+  font-size: 100%;
+  line-height: 1.6;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scrollbar-gutter: stable;
+}
+
+body {
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  font-size: var(--text-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+main {
+  flex: 1;
+}
+
+main:focus {
+  outline: none;
+}
+
+/* Keep the page still behind the open menu or full-screen viewer */
+html:has(#site-menu:popover-open),
+html:has(dialog[open]) {
+  overflow: hidden;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+/* <picture> only chooses the file; the <img> inside it does all the layout. */
+picture {
+  display: contents;
+}
+
+img {
+  height: auto;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.005em;
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+strong,
+b {
+  font-weight: 500;
+}
+
+ul[role='list'],
+ol[role='list'] {
+  list-style: none;
+  padding: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25em;
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  color: var(--colour-accent);
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--colour-accent);
+  outline-offset: 3px;
+}
+
+::selection {
+  background: var(--colour-accent);
+  color: var(--colour-bg);
+}
+
+/* Utilities ------------------------------------------------------------------------------ */
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+.skip-link {
+  position: absolute;
+  top: 0.75rem;
+  left: var(--gutter);
+  z-index: 100;
+  padding: 0.75rem 1.25rem;
+  background: var(--colour-text);
+  color: var(--colour-bg);
+  font-size: var(--text-label);
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transform: translateY(-200%);
+}
+
+.skip-link:focus-visible {
+  transform: none;
+}
+
+.skip-link:hover {
+  color: var(--colour-bg);
+}
+
+/* Small uppercase interface label */
+.label {
+  font-family: var(--font-ui);
+  font-size: var(--text-label);
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  line-height: 1.5;
+  text-transform: uppercase;
+  color: var(--colour-text-muted);
+}
+
+/* Quiet outlined button, used for shop links */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75em;
+  min-height: 3rem;
+  padding: 0.75rem 1.5rem;
+  border: 1px solid var(--colour-text-muted);
+  font-family: var(--font-ui);
+  font-size: var(--text-label);
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  line-height: 1.3;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition:
+    color 0.3s ease,
+    border-color 0.3s ease;
+}
+
+a.button:hover {
+  border-color: var(--colour-accent);
+}
+
+/* Placeholder links are shown as text until a real address is filled in */
+.button.is-placeholder {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+  border-style: dashed;
+  text-transform: none;
+  letter-spacing: 0.02em;
+}
+
+.button.is-placeholder > span:first-child {
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+}
+
+/* Atmosphere --------------------------------------------------------------------------------
+ * Film grain on the dark field. It sits behind all page content, so it never covers a work. */
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: -10%;
+  z-index: -1;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.92 0 0 0 0 0.9 0 0 0 0 0.85 0.9 0 0 0 -0.42'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  opacity: var(--grain-opacity);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  body::before {
+    animation: grain 1s steps(6) infinite;
+  }
+}
+
+@keyframes grain {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+
+  17% {
+    transform: translate(-3%, 2%);
+  }
+
+  33% {
+    transform: translate(2%, -3%);
+  }
+
+  50% {
+    transform: translate(-2%, -2%);
+  }
+
+  67% {
+    transform: translate(3%, 3%);
+  }
+
+  83% {
+    transform: translate(-1%, 3%);
+  }
+}
+
+/* Halo: a tiny copy of a work blurred into light of its own colours (see Halo.astro). Its parent
+ * must be position: relative and isolation: isolate, so the halo stays behind the work. */
+.halo {
+  position: absolute;
+  inset: -12%;
+  z-index: -1;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  filter: blur(clamp(36px, 6vw, 96px)) saturate(1.3) brightness(0.8);
+  opacity: var(--halo-opacity);
+  pointer-events: none;
+  transition: opacity 0.8s var(--ease-out);
+}
+
+/* Text that may sit in a work's glow gets a soft dark backing, so it stays readable even
+ * beside a very pale work. */
+.on-glow {
+  text-shadow:
+    0 0 0.4em var(--colour-bg),
+    0 0 1.2em var(--colour-bg),
+    0 0 2.4em var(--colour-bg);
+}
+
+/* Page transitions -------------------------------------------------------------------------
+ * Pages cross-fade, and the artwork that was clicked grows into its own page (the name
+ * "artwork" is given to it by src/scripts/motion.ts). Off for reduced motion. */
+
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition {
+    navigation: auto;
+  }
+
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 0.55s;
+  }
+
+  ::view-transition-group(artwork) {
+    animation-duration: 0.9s;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+}
+
+/* Scroll reveal ---------------------------------------------------------------------------
+ * Elements marked data-reveal fade and rise into place as they enter the screen: tied to the
+ * scroll position where the browser supports it, otherwise run by the script once it has
+ * started (html.reveal-ready). Never hidden without JavaScript support, in print or for
+ * visitors who ask for reduced motion. data-reveal="fallback" means: only where scroll-linked
+ * animation is missing, because the page has its own scroll effect. */
+
+@supports (animation-timeline: view()) {
+  @media screen and (prefers-reduced-motion: no-preference) {
+    [data-reveal]:not([data-reveal='fallback']) {
+      animation: reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 70%;
+    }
+  }
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(var(--reveal-distance));
+  }
+}
+
+@supports not (animation-timeline: view()) {
+  @media screen and (prefers-reduced-motion: no-preference) {
+    .reveal-ready [data-reveal] {
+      transition:
+        opacity var(--reveal-duration) var(--ease-out),
+        transform var(--reveal-duration) var(--ease-out);
+    }
+
+    .reveal-ready [data-reveal]:not(.is-visible) {
+      opacity: 0;
+      transform: translateY(var(--reveal-distance));
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

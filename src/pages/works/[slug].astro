@@ -1,0 +1,355 @@
+---
+import { getImage } from 'astro:assets';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ArtworkPicture from '../../components/ArtworkPicture.astro';
+import Halo from '../../components/Halo.astro';
+import Viewer from '../../components/Viewer.astro';
+import { getWorks, statusLabel, workPath, type Work } from '../../lib/works';
+import { socialImageFor } from '../../lib/social';
+import { isPlaceholder } from '../../lib/placeholder';
+
+export async function getStaticPaths() {
+  const works = await getWorks();
+  return works.map((work, index) => ({
+    params: { slug: work.id },
+    props: { work, previous: works[index - 1], next: works[index + 1] },
+  }));
+}
+
+interface Props {
+  work: Work;
+  previous?: Work;
+  next?: Work;
+}
+
+const { work, previous, next } = Astro.props;
+const { title, year, medium, dimensions, status, etsyUrl, printsUrl } = work.data;
+const ratio = work.ratio.toFixed(4);
+
+// Large copy (longest side up to 3200px) for the full-screen view, and the link target
+// for visitors without JavaScript.
+const scale = Math.min(1, 3200 / Math.max(work.image.width, work.image.height));
+const full = await getImage({
+  src: work.image,
+  width: Math.round(work.image.width * scale),
+  format: 'webp',
+  fit: 'contain',
+});
+
+// The original is offered only while it is available; prints stay whenever they exist.
+const shopLinks: { label: string; href: string }[] = [];
+if (status === 'available' && etsyUrl) shopLinks.push({ label: 'Original on Etsy', href: etsyUrl });
+if (printsUrl) shopLinks.push({ label: 'Prints', href: printsUrl });
+
+const description = `${[title, year].join(', ')}. ${[medium, dimensions].filter(Boolean).join(', ')}.`;
+const socialImage = await socialImageFor(work);
+---
+
+<BaseLayout title={title} description={description} socialImage={socialImage}>
+  <article class="work-page" data-shape={work.shape}>
+    <div class="stage">
+      <a
+        class="stage-work"
+        href={full.src}
+        style={`--ratio: ${ratio}`}
+        data-viewer-open
+        data-width={full.attributes.width}
+        data-height={full.attributes.height}
+      >
+        <Halo work={work} />
+        <ArtworkPicture
+          work={work}
+          priority
+          sizes={work.shape === 'upright'
+            ? `(min-width: 64em) and (min-aspect-ratio: 5/4) min(58vw, calc((100vh - 8rem) * ${ratio})), min(calc(100vw - 2rem), calc((86vh - 4.5rem) * ${ratio}))`
+            : `min(calc(100vw - 2rem), calc((86vh - 4.5rem) * ${ratio}))`}
+        />
+        <span class="visually-hidden">, open full-screen view</span>
+      </a>
+    </div>
+
+    <div class="details on-glow" data-reveal>
+      <div class="details-head">
+        <p class="numeral" aria-hidden="true">{work.numeral}</p>
+        <h1 class="title">{title}</h1>
+      </div>
+
+      <div class="details-body">
+        <dl class="facts">
+          <div>
+            <dt class="label">Year</dt>
+            <dd>{year}</dd>
+          </div>
+          <div>
+            <dt class="label">Medium</dt>
+            <dd>{medium}</dd>
+          </div>
+          {
+            dimensions && (
+              <div>
+                <dt class="label">Dimensions</dt>
+                <dd>{dimensions}</dd>
+              </div>
+            )
+          }
+          <div>
+            <dt class="label">Availability</dt>
+            <dd class:list={[{ 'is-sold': status === 'sold' }]}>{statusLabel[status]}</dd>
+          </div>
+        </dl>
+
+        {
+          shopLinks.length > 0 && (
+            <ul class="shop" role="list">
+              {shopLinks.map(({ label, href }) => (
+                <li>
+                  {isPlaceholder(href) ? (
+                    <span class="button is-placeholder">
+                      <span>{label}</span>
+                      <span>{href}</span>
+                    </span>
+                  ) : (
+                    <a class="button" href={href}>
+                      {label}
+                      <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true">
+                        <path d="M2 8 8 2M3.5 2H8v4.5" fill="none" stroke="currentColor" stroke-width="1.2" />
+                      </svg>
+                    </a>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )
+        }
+      </div>
+    </div>
+
+    <nav class="pager" aria-label="More works">
+      {
+        previous && (
+          <a class="pager-link previous" href={workPath(previous)} rel="prev">
+            <span class="label">Previous</span>
+            <span class="pager-title">{previous.data.title}</span>
+          </a>
+        )
+      }
+      {
+        next && (
+          <a class="pager-link next" href={workPath(next)} rel="next">
+            <span class="label">Next</span>
+            <span class="pager-title">{next.data.title}</span>
+          </a>
+        )
+      }
+    </nav>
+  </article>
+
+  <Viewer title={title} ratio={ratio} />
+</BaseLayout>
+
+<style>
+  /* The work, as large as the screen allows, glowing in the dark, with the title just
+     showing below it. On wide screens an upright work hangs beside its label instead, like a
+     painting and its wall label. */
+  .work-page {
+    overflow-x: clip;
+  }
+
+  .stage {
+    --peek: clamp(4rem, 12vh, 7rem);
+
+    display: grid;
+    place-items: center;
+    padding: var(--page-top) var(--gutter) 0;
+  }
+
+  .stage-work {
+    position: relative;
+    isolation: isolate;
+    display: block;
+    width: min(100%, (100vh - var(--page-top) - var(--peek)) * var(--ratio));
+    width: min(100%, (100svh - var(--page-top) - var(--peek)) * var(--ratio));
+    cursor: zoom-in;
+    view-transition-name: artwork;
+  }
+
+  .stage-work :global(img) {
+    width: 100%;
+    height: auto;
+    aspect-ratio: var(--ratio);
+    object-fit: contain;
+  }
+
+  .stage-work:hover :global(.halo) {
+    opacity: calc(var(--halo-opacity) * 1.6);
+  }
+
+  .details {
+    display: grid;
+    gap: 2.5rem var(--gutter);
+    max-width: var(--page-max);
+    margin-inline: auto;
+    padding: clamp(3rem, 9vh, 6rem) var(--gutter) 0;
+  }
+
+  .details-head,
+  .details-body {
+    display: grid;
+    align-content: start;
+    gap: 1.75rem;
+  }
+
+  .numeral {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-style: italic;
+    line-height: 1;
+    color: var(--colour-accent);
+  }
+
+  .numeral::after {
+    content: '';
+    width: 3rem;
+    height: 1px;
+    background: currentColor;
+    opacity: 0.6;
+  }
+
+  .title {
+    max-width: 12em;
+    font-size: clamp(2.5rem, 1.6rem + 3.6vw, 5.5rem);
+    font-style: italic;
+    line-height: 1;
+    letter-spacing: -0.015em;
+  }
+
+  .facts {
+    display: grid;
+    max-width: 36rem;
+  }
+
+  .facts div {
+    display: grid;
+    grid-template-columns: minmax(7.5rem, 1fr) 2fr;
+    gap: 0.25rem 1.5rem;
+    padding-block: 0.875rem;
+    border-top: 1px solid var(--colour-line);
+  }
+
+  .facts div:last-child {
+    border-bottom: 1px solid var(--colour-line);
+  }
+
+  .facts dt {
+    padding-top: 0.2em;
+  }
+
+  .is-sold {
+    display: flex;
+    align-items: center;
+    gap: 0.6em;
+  }
+
+  /* The gallery convention: a small dot marks a sold work. */
+  .is-sold::before {
+    content: '';
+    width: 0.5em;
+    height: 0.5em;
+    border-radius: 50%;
+    background: var(--colour-accent);
+  }
+
+  .shop {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .pager {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--gutter);
+    max-width: var(--page-max);
+    margin-inline: auto;
+    padding: clamp(5rem, 16vh, 10rem) var(--gutter) 0;
+  }
+
+  .pager-link {
+    display: grid;
+    align-content: start;
+    gap: 0.75rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--colour-line);
+    text-decoration: none;
+  }
+
+  .pager-link.next {
+    grid-column: 2;
+    text-align: right;
+  }
+
+  .pager-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 1.1rem + 1.6vw, 2.75rem);
+    font-style: italic;
+    line-height: 1.05;
+    transition: color 0.4s ease;
+  }
+
+  .pager-link:hover .label {
+    color: var(--colour-accent);
+  }
+
+  /* Below a full-width work: title on the left, details on the right. */
+  @media (min-width: 56em) {
+    .details {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    }
+
+    .details-body {
+      padding-top: 2.5rem;
+    }
+  }
+
+  @media (min-width: 64em) and (min-aspect-ratio: 5/4) {
+    .work-page[data-shape='upright'] {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: var(--gutter);
+      padding-inline: var(--gutter);
+    }
+
+    .work-page[data-shape='upright'] .stage {
+      grid-column: 1 / span 7;
+      justify-items: end;
+      padding-inline: 0;
+    }
+
+    .work-page[data-shape='upright'] .stage-work {
+      width: min(100%, (100vh - var(--page-top) - var(--gutter)) * var(--ratio));
+      width: min(100%, (100svh - var(--page-top) - var(--gutter)) * var(--ratio));
+    }
+
+    .work-page[data-shape='upright'] .details {
+      grid-column: 8 / span 5;
+      grid-template-columns: minmax(0, 1fr);
+      align-self: end;
+      max-width: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .work-page[data-shape='upright'] .details-body {
+      padding-top: 0;
+    }
+
+    .work-page[data-shape='upright'] .pager {
+      grid-column: 1 / -1;
+      width: 100%;
+      padding-inline: 0;
+    }
+  }
+</style>

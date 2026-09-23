@@ -1,0 +1,86 @@
+---
+import { getEntry, render } from 'astro:content';
+import { Picture } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const about = await getEntry('about', 'index');
+if (!about) throw new Error('src/content/about/index.md is missing.');
+const { Content } = await render(about);
+
+// Optional portrait: an image placed next to src/content/about/index.md. None, none shown.
+const portraits = import.meta.glob<{ default: ImageMetadata }>(
+  '/src/content/about/*.{jpg,jpeg,png,webp,avif,JPG,JPEG,PNG,WEBP,AVIF}',
+  { eager: true },
+);
+const portrait = Object.values(portraits)[0]?.default;
+const portraitAlt = about.data.portraitAlt;
+if (portrait && !portraitAlt) {
+  throw new Error('Describe the portrait in "portraitAlt" in src/content/about/index.md.');
+}
+---
+
+<BaseLayout title="About">
+  <div class:list={['about', { 'has-portrait': portrait }]}>
+    <h1 class="label">About</h1>
+    <div class="statement">
+      <Content />
+    </div>
+    {
+      portrait && portraitAlt && (
+        <div class="portrait" style={`--ratio: ${(portrait.width / portrait.height).toFixed(4)}`}>
+          <Picture
+            src={portrait}
+            alt={portraitAlt}
+            widths={[480, 720, 960, 1280, 1600]}
+            sizes="(min-width: 56em) 36vw, calc(100vw - 2rem)"
+            formats={['avif', 'webp']}
+            fallbackFormat="jpg"
+            width={Math.min(portrait.width, 1600)}
+            fit="contain"
+          />
+        </div>
+      )
+    }
+  </div>
+</BaseLayout>
+
+<style>
+  .about {
+    display: grid;
+    gap: 2.5rem var(--gutter);
+    max-width: var(--page-max);
+    margin-inline: auto;
+    padding: calc(var(--page-top) + clamp(2rem, 10vh, 7rem)) var(--gutter) 0;
+  }
+
+  .statement {
+    max-width: 30em;
+    font-family: var(--font-display);
+    font-size: var(--text-lead);
+    line-height: 1.45;
+  }
+
+  .statement :global(p + p) {
+    margin-top: 1em;
+  }
+
+  .portrait :global(img) {
+    width: min(100%, 80vh * var(--ratio));
+    width: min(100%, 80svh * var(--ratio));
+    height: auto;
+    aspect-ratio: var(--ratio);
+    object-fit: contain;
+  }
+
+  @media (min-width: 56em) {
+    .has-portrait {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      align-items: start;
+    }
+
+    .has-portrait h1 {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

@@ -1,6 +1,6 @@
-# Quince Quip: portfolio website
+# Q: portfolio website
 
-The portfolio site for Quince Quip. It has a gallery, one page per artwork, an About page, a
+The portfolio site for Q. It has a gallery, one page per artwork, an About page, a
 Contact page and three legal pages (Privacy, Cookies, Legal). It sells nothing itself: it links out
 to Etsy for original works and to the print shop for prints.
 
@@ -161,7 +161,9 @@ To use a different font:
 ### The artist name
 
 The name shown in the header, on the gallery and in the footer is set in **`src/site.config.ts`**
-(`name: 'Quince Quip'`).
+(`name: 'Q'`). On the gallery's opening screen, a one-word name sits large at the bottom right of
+the featured work; with two or more words, the first sits at the top left and the rest at the
+bottom right.
 
 ## 5. Filling in the placeholders
 

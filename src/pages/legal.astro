@@ -1,0 +1,42 @@
+---
+import LegalLayout from '../layouts/LegalLayout.astro';
+import { site } from '../site.config';
+
+const { identity, contact } = site.legal;
+const year = new Date().getFullYear();
+---
+
+<LegalLayout title="Legal notice" description="Legal notice and terms of use for this website.">
+  <p>These terms apply to your use of this website.</p>
+
+  <h2>Website operator</h2>
+  <p>This website is operated by {identity}.</p>
+  <p>Contact: {contact}</p>
+
+  <h2>Copyright</h2>
+  <p>
+    All artworks and images on this website are protected by copyright: © {year} {site.name}. All rights
+    reserved.
+  </p>
+  <p>
+    No artwork or image from this website may be reproduced, copied, published, altered or used in any
+    other way without permission. To ask for permission, use the contact details above.
+  </p>
+
+  <h2>Sales and orders</h2>
+  <p>
+    This website does not sell anything directly and does not take orders or payments. Original works
+    are sold on Etsy and prints are ordered through Gelato. All sales and orders are made on those
+    platforms and are governed by Etsy's and Gelato's own terms and policies.
+  </p>
+
+  <h2>Hosting</h2>
+  <p>This website is hosted by:</p>
+  <address>
+    Vercel Inc.<br />
+    440 N Barranca Avenue #4133<br />
+    Covina, CA 91723<br />
+    United States<br />
+    <a href="https://vercel.com">vercel.com</a>
+  </address>
+</LegalLayout>
