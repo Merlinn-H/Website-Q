@@ -1,6 +1,12 @@
 ---
 import { site } from '../site.config';
 
+interface Props {
+  /** One slim line, for pages that fit on one screen (the work pages). */
+  compact?: boolean;
+}
+
+const { compact = false } = Astro.props;
 const path = Astro.url.pathname;
 const links = [
   { href: '/privacy/', label: 'Privacy' },
@@ -10,7 +16,7 @@ const links = [
 const year = new Date().getFullYear();
 ---
 
-<footer class="site-footer">
+<footer class:list={['site-footer', { compact }]}>
   <nav aria-label="Legal">
     <ul role="list">
       {
@@ -57,5 +63,25 @@ const year = new Date().getFullYear();
 
   a[aria-current='page'] {
     color: var(--colour-text);
+  }
+
+  .compact {
+    flex-wrap: nowrap;
+    gap: 1rem;
+    height: var(--footer-slim);
+    margin-top: 0;
+    padding-block: 0;
+    border-top: 0;
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+  }
+
+  .compact ul {
+    flex-wrap: nowrap;
+    gap: 0 clamp(0.75rem, 3vw, 1.5rem);
+  }
+
+  .compact p {
+    white-space: nowrap;
   }
 </style>

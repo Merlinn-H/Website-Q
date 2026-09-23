@@ -10,7 +10,7 @@ const links = [
 ---
 
 {/* Stays at the top of the screen on every page, with every tab one tap away, phones included. */}
-<header class="site-header">
+<header class="site-header on-bleed">
   <a class="brand" href="/" aria-current={path === '/' ? 'page' : undefined}>{site.name}</a>
 
   <nav class="site-nav" aria-label="Main">
@@ -42,11 +42,13 @@ const links = [
   }
 
   /* A soft shade from the top of the screen, so the menu stays readable over the works as the
-     page scrolls beneath it. */
+     page scrolls beneath it. It only comes once the page has moved: at rest, and on a work's own
+     page, nothing darkens the top of a work. Browsers without scroll-linked animation keep it,
+     within the menu's own band. */
   .site-header::before {
     content: '';
     position: absolute;
-    inset: 0 0 -1.5rem;
+    inset: 0;
     z-index: -1;
     background: linear-gradient(
       to bottom,
@@ -54,6 +56,25 @@ const links = [
       transparent
     );
     pointer-events: none;
+  }
+
+  @supports (animation-timeline: scroll()) {
+    .site-header::before {
+      inset: 0 0 -1.5rem;
+      opacity: 0;
+      animation-name: shade-in;
+      animation-duration: auto;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: scroll(root);
+      animation-range: 0px 5rem;
+    }
+  }
+
+  @keyframes shade-in {
+    to {
+      opacity: 1;
+    }
   }
 
   .brand {

@@ -141,10 +141,8 @@ More settings in the same file control the atmosphere (`0` turns an effect off):
 - `--bleed-opacity`: how strongly the colours at the edges of each work run out onto the page.
 - `--bleed-size` and `--bleed-size-vertical`: how far they run sideways, and up and down.
 - `--bleed-blur`: how soft they are.
-- `--frame-gap`: the space between each work and the fine frame drawn on the wall around it (in
-  the gallery only; work pages show the work unframed).
-- `--frame-line`: the colour of that frame (`transparent` hides it).
-- `--parallax`: how far a work glides against its frame as the page scrolls.
+- `--frame-gap`: the empty space kept around each work in the gallery.
+- `--parallax`: how far a work glides as the page scrolls.
 - `--wall-light`: the faint light falling from the top of the screen.
 - `--vignette`: the shadow deepening towards the edges of the screen.
 - `--grain-opacity`: the fine, still grain on the background.
@@ -293,22 +291,26 @@ variable named `SITE_URL` with the value `https://www.yourdomain.com`, and redep
 **How the site behaves**, for reference: it works fully with JavaScript switched off; it sets no
 cookies and loads nothing from other companies; every image keeps its own proportions and is never
 cropped; tapping or clicking an artwork opens it full screen, where it can be zoomed. The menu
-(Gallery, About, Contact) stays at the top of the screen on every page, phones included.
+(Gallery, About, Contact) stays at the top of the screen on every page, phones included; a soft
+shade appears behind it only once the page has scrolled, so it never darkens a work at rest.
 
-The gallery opens on the featured work with the name set around it. Each work hangs in a fine
-frame drawn on the wall, and the colours at its edges wash softly onto the wall around it. As the
-page scrolls, each work comes out of the dark as it reaches the middle of the screen and glides a
-little faster than its frame, as if hanging in front of the wall. Upright works hang left or right
+The gallery opens on the featured work with the name set around it. The colours at the edges of
+each work wash softly onto the wall around it. As the page scrolls, each work comes out of the
+dark as it reaches the middle of the screen and glides a little faster than the page, as if
+hanging in front of the wall. Upright works hang left or right
 in turn beside their title and number; wide works take the full width. Each work is sized so that
 it fits on screen with its title, below the menu, and it settles gently into place: when scrolling
 stops close to a work, the page glides until the work sits in the middle of the screen. Stop
 between two works and the page stays where it is.
 
-A work page shows everything on one screen: the work itself (without its gallery frame), its
-number, title, details, shop buttons and the links to the previous and next works (the work beside
-its label on computers, above it on phones). A click on the empty background, or the Escape key,
-returns to the gallery at the same place; the Gallery link in the menu does the same without
-JavaScript. Clicking the work itself opens it full screen, where it can be zoomed.
+A work page shows everything on one screen, with nothing to scroll, whatever the screen (phones
+held upright or sideways, tablets, computers): the work itself, as large as the space allows, its
+number, title, details, shop buttons, the links to the previous and next works and a one-line
+footer. On computers the label sits beside the work with Previous / Next under it; on phones it
+sits under the work, and the details read like a museum label (year, medium and dimensions on one
+line, then availability). A click on the empty background, or the Escape key, returns to the
+gallery at the same place; the Gallery link in the menu does the same without JavaScript. Clicking
+the work itself opens it full screen, where it can be zoomed.
 
 Moving around the site never reloads the page: each page is fetched shortly before it is needed
 (as soon as a link to it has been on screen for a moment) and swapped in while the old one fades

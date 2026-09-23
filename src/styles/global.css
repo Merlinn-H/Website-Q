@@ -253,8 +253,8 @@ body::after {
   opacity: var(--grain-opacity);
 }
 
-/* Plate: the box of a work as it hangs on the wall. It holds, from back to front, the bleed of
- * its colours, its frame, and the work itself (a link). */
+/* Plate: the box of a work as it hangs on the wall. It holds the bleed of its colours, behind
+ * the work itself (a link). */
 .plate {
   position: relative;
   isolation: isolate;
@@ -262,17 +262,8 @@ body::after {
 
 .plate > a {
   position: relative;
-  z-index: 2;
-  display: block;
-}
-
-/* Frame: a hairline on the wall around the work, a little larger than it. */
-.frame {
-  position: absolute;
-  inset: calc(-1 * var(--frame-gap));
   z-index: 1;
-  border: 1px solid var(--frame-line);
-  pointer-events: none;
+  display: block;
 }
 
 /* Bleed: the colours at the edges of a work run out onto the wall (see Bleed.astro). The

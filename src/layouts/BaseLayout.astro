@@ -22,9 +22,11 @@ interface Props {
   socialImage?: SocialImage;
   /** Keep the page out of search results (used by the 404 page). */
   noindex?: boolean;
+  /** A page that fits on one screen (the work pages): the footer shrinks to one slim line. */
+  focus?: boolean;
 }
 
-const { title, description = site.description, socialImage, noindex = false } = Astro.props;
+const { title, description = site.description, socialImage, noindex = false, focus = false } = Astro.props;
 
 const documentTitle = title ? `${title} · ${site.name}` : site.name;
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
@@ -81,7 +83,7 @@ const socialImageUrl = socialImage && new URL(socialImage.src, Astro.site).href;
     <main id="main" tabindex="-1">
       <slot />
     </main>
-    <SiteFooter />
+    <SiteFooter compact={focus} />
 
     <script>
       import '../scripts/motion';

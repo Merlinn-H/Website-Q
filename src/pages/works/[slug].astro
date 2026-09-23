@@ -47,7 +47,7 @@ const description = `${[title, year].join(', ')}. ${[medium, dimensions].filter(
 const socialImage = await socialImageFor(work);
 ---
 
-<BaseLayout title={title} description={description} socialImage={socialImage}>
+<BaseLayout title={title} description={description} socialImage={socialImage} focus>
   <article class="work-page" data-back={`/#${work.id}`}>
     <div class="stage">
       <div class="stage-plate plate" style={`--ratio: ${ratio}`}>
@@ -63,7 +63,7 @@ const socialImage = await socialImageFor(work);
           <ArtworkPicture
             work={work}
             priority
-            sizes={`(min-width: 48em) and (min-aspect-ratio: 1/1) min(calc(100vw - 32rem), calc((100vh - 10rem) * ${ratio})), min(calc(100vw - 3.5rem), calc(max(8rem, 100vh - 26rem) * ${ratio}))`}
+            sizes={`(min-width: 48em) and (min-aspect-ratio: 1/1) min(calc(100vw - 30rem), calc((100vh - 8rem) * ${ratio})), min(calc(100vw - 2rem), calc(max(6rem, 100vh - 24rem) * ${ratio}))`}
           />
           <span class="visually-hidden">, open full-screen view</span>
         </a>
@@ -159,20 +159,26 @@ const socialImage = await socialImageFor(work);
 
 <style>
   /* ---------------------------------------------------------------------------------------
-     Everything about the work on one screen: the work itself (unframed), as large as the space
-     allows, with its label (number, title, details, shop links) and the way to the previous and
-     next works. Beside the label on wide screens, above it on phones and tall screens. The
-     work's box is worked out from the space left for it, so it never moves while loading.
+     Focus: everything about the work on one screen, with nothing to scroll. The work itself
+     (unframed) takes all the height it can; its label (number, title, details, shop links), the
+     way to the previous and next works and a one-line footer (BaseLayout "focus") share the rest.
+     On wide screens the label sits beside the work, like a wall label, with Previous / Next under
+     it; on phones and tall screens it sits under the work. Text and spacing tighten on short
+     screens. The work's box is worked out from the space left for it, so it never moves while
+     loading. Should a screen be too small for all of it, the page scrolls rather than hide
+     anything.
      --------------------------------------------------------------------------------------- */
   .work-page {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: minmax(9rem, 1fr) auto auto;
+    grid-template-rows: minmax(6rem, 1fr) auto auto;
     grid-template-areas: 'stage' 'details' 'pager';
-    row-gap: clamp(1rem, 2.5vh, 2rem);
-    min-height: 100vh;
-    min-height: 100svh;
-    padding: var(--page-top) var(--gutter) clamp(0.75rem, 2vh, 1.5rem);
+    --end-pad: clamp(0.25rem, 1vh, 0.75rem);
+
+    row-gap: clamp(0.75rem, 2vh, 1.5rem);
+    min-height: calc(100vh - var(--footer-slim));
+    min-height: calc(100svh - var(--footer-slim));
+    padding: var(--page-top) var(--gutter) var(--end-pad);
     overflow-x: clip;
   }
 
@@ -228,12 +234,15 @@ const socialImage = await socialImageFor(work);
     grid-area: details;
     display: grid;
     align-content: start;
-    gap: clamp(0.75rem, 2vh, 1.5rem);
+    gap: clamp(0.5rem, 1.8vh, 1.25rem);
   }
 
+  /* The number sits before the title, or above it on wide screens. */
   .details-head {
-    display: grid;
-    gap: 0.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25rem 1rem;
   }
 
   .numeral {
@@ -256,7 +265,7 @@ const socialImage = await socialImageFor(work);
   }
 
   .title {
-    font-size: clamp(1.75rem, 1.2rem + 2vw, 3.25rem);
+    font-size: clamp(1.5rem, min(1.2rem + 2vw, 5.5vh), 3.25rem);
     font-style: italic;
     line-height: 1.05;
   }
@@ -264,8 +273,8 @@ const socialImage = await socialImageFor(work);
   .facts {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.75rem 1.5rem;
-    padding-block: 0.75rem;
+    gap: clamp(0.4rem, 1.2vh, 0.75rem) 1.5rem;
+    padding-block: clamp(0.4rem, 1.2vh, 0.75rem);
     border-block: 1px solid var(--colour-line);
   }
 
@@ -296,49 +305,22 @@ const socialImage = await socialImageFor(work);
     background: var(--colour-accent);
   }
 
+  /* The shop links side by side, sharing the width. */
   .shop {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 8.5rem), 1fr));
     gap: 0.5rem;
   }
 
   .shop :global(.button) {
+    width: 100%;
     min-height: 2.75rem;
-    padding: 0.6rem 1.1rem;
+    padding: 0.5rem 0.85rem;
   }
 
-  /* Phones: the shop links side by side, and everything a little closer on short screens, so the
-     work keeps its room on the one screen. */
-  @media (max-width: 47.99em) {
-    .shop {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .shop :global(.button) {
-      width: 100%;
-      padding: 0.5rem 0.75rem;
-    }
-
-    .shop :global(.button.is-placeholder > span + span) {
-      font-size: 0.75rem;
-      line-height: 1.35;
-    }
-  }
-
-  @media (max-width: 47.99em) and (max-height: 50em) {
-    .work-page {
-      row-gap: 0.75rem;
-    }
-
-    .details {
-      gap: 0.625rem;
-    }
-
-    .facts {
-      gap: 0.5rem 1.25rem;
-      padding-block: 0.5rem;
-    }
+  .shop :global(.button.is-placeholder > span + span) {
+    font-size: 0.75rem;
+    line-height: 1.35;
   }
 
   .pager {
@@ -346,15 +328,15 @@ const socialImage = await socialImageFor(work);
     display: flex;
     justify-content: space-between;
     align-items: start;
-    gap: var(--gutter);
-    padding-top: clamp(0.5rem, 1.5vh, 1rem);
+    gap: 1rem;
+    padding-top: clamp(0.4rem, 1.2vh, 1rem);
     border-top: 1px solid var(--colour-line);
   }
 
   .pager-link {
     display: grid;
     gap: 0.25rem;
-    max-width: 45%;
+    max-width: 48%;
     padding-block: 0.25rem;
     text-decoration: none;
   }
@@ -378,13 +360,56 @@ const socialImage = await socialImageFor(work);
 
   .pager-title {
     font-family: var(--font-display);
-    font-size: 1.25rem;
+    font-size: 1.125rem;
     font-style: italic;
     line-height: 1.1;
   }
 
-  /* Phones: the pager keeps its labels only; the titles stay available to screen readers. */
-  @media (max-width: 47.99em) {
+  /* Phones and short screens: the details read like a museum label (year, medium and dimensions
+     on one line, then availability), and the pager keeps its labels only; the names of the details
+     and the titles stay available to screen readers. */
+  @media (max-width: 47.99em), (max-height: 30em) {
+    .facts {
+      display: block;
+    }
+
+    .facts div {
+      display: inline;
+    }
+
+    .facts div + div:not(:last-child)::before {
+      content: '\00a0·\0020';
+      color: var(--colour-text-muted);
+    }
+
+    .facts div:last-child {
+      display: block;
+    }
+
+    .facts dt {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      margin: -1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+
+    .facts dd {
+      display: inline;
+      font-size: 0.875rem;
+      line-height: 1.45;
+    }
+
+    .facts div:last-child dd {
+      display: block;
+    }
+
+    .facts .is-sold {
+      display: flex;
+    }
+
     .pager-title {
       position: absolute;
       width: 1px;
@@ -396,17 +421,78 @@ const socialImage = await socialImageFor(work);
     }
   }
 
-  /* Wide screens: the work beside its label, like a painting and its wall label. */
-  @media (min-width: 48em) and (min-aspect-ratio: 1/1) {
+  /* Short screens: smaller details, so the work keeps its room. */
+  @media (max-height: 46em) {
+    .numeral {
+      font-size: 1.25rem;
+    }
+
+    .facts dd {
+      font-size: 0.8125rem;
+      line-height: 1.3;
+    }
+
+    .shop :global(.button) {
+      min-height: 2.5rem;
+      padding-block: 0.4rem;
+    }
+  }
+
+  /* Wide screens, and phones held sideways: the work beside its label, like a painting and its
+     wall label, with Previous and Next under the label, so the work has the full height. */
+  @media (min-width: 48em) and (min-aspect-ratio: 1/1), (min-width: 36em) and (min-aspect-ratio: 3/2) {
     .work-page {
-      grid-template-columns: minmax(0, 1fr) minmax(17rem, 24rem);
+      grid-template-columns: minmax(0, 1fr) minmax(16rem, 24rem);
       grid-template-rows: minmax(0, 1fr) auto;
-      grid-template-areas: 'stage details' 'pager pager';
+      grid-template-areas: 'stage details' 'stage pager';
       column-gap: clamp(2rem, 5vw, 5rem);
     }
 
     .details {
       align-self: center;
+    }
+
+    .details-head {
+      display: grid;
+      gap: 0.5rem;
+    }
+
+    /* The work's glow reaches below it: keep room for it on screen, or the page would scroll. */
+    .stage {
+      padding-bottom: max(0px, var(--bleed-size-vertical) - var(--footer-slim) - var(--end-pad));
+    }
+  }
+
+  /* Very short screens (phones held sideways): the number beside a smaller title, and everything a
+     little closer. */
+  @media (max-height: 30em) {
+    .work-page {
+      row-gap: 0.5rem;
+    }
+
+    .details {
+      gap: 0.4rem;
+    }
+
+    .details-head {
+      display: flex;
+    }
+
+    .title {
+      font-size: clamp(1.25rem, 5.5vh, 1.5rem);
+    }
+
+    .shop :global(.button) {
+      min-height: 2.25rem;
+      padding-block: 0.3rem;
+    }
+
+    .shop :global(.button.is-placeholder > span + span) {
+      font-size: 0.6875rem;
+    }
+
+    .pager {
+      padding-top: 0.25rem;
     }
   }
 

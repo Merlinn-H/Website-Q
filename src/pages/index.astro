@@ -49,7 +49,6 @@ const letters = Math.max(...nameParts.map((part) => part.text.length));
       featured && (
         <div class="hero-plate plate">
           <Bleed work={featured} />
-          <span class="frame" aria-hidden="true" />
           <a class="hero-work" href={workPath(featured)} data-artwork-link>
             <ArtworkPicture
               work={featured}
@@ -77,7 +76,6 @@ const letters = Math.max(...nameParts.map((part) => part.text.length));
             <figure style={`--ratio: ${ratio(work.ratio)}`} data-snap="center">
               <div class="work-plate plate">
                 <Bleed work={work} />
-                <span class="frame" aria-hidden="true" />
                 <a class="work-link" href={workPath(work)} data-artwork-link>
                   <ArtworkPicture
                     work={work}
@@ -106,11 +104,11 @@ const letters = Math.max(...nameParts.map((part) => part.text.length));
 
 <style>
   /* ---------------------------------------------------------------------------------------
-     Opening screen. The featured work, whole and uncropped, hangs in its frame with its colours
-     washing the wall, and the name is set around it: a one-word name bottom right; otherwise
-     first word top left, the rest bottom right. Every size below is worked out from the screen
-     size, the work's proportions, its frame and the length of the name, so nothing moves while
-     loading and the name can never touch the work or its frame.
+     Opening screen. The featured work, whole and uncropped, hangs with its colours washing the
+     wall, and the name is set around it: a one-word name bottom right; otherwise first word top
+     left, the rest bottom right. Every size below is worked out from the screen size, the work's
+     proportions, the space kept around it (--frame-gap) and the length of the name, so nothing
+     moves while loading and the name can never touch the work.
      - stack: the name sits above and/or below the work (phones, and wide works).
      - sides: on wide screens an upright work takes the full height and the name sits beside it.
      --------------------------------------------------------------------------------------- */
@@ -171,7 +169,7 @@ const letters = Math.max(...nameParts.map((part) => part.text.length));
       padding-bottom: var(--pad-bottom);
     }
 
-    /* The name hugs the frame: first word against its top left, last (or only) word against its
+    /* The name hugs the work: first word against its top left, last (or only) word against its
        bottom right. The middle column is exactly as wide as the work. */
     .hero[data-layout='sides'] .hero-name {
       display: grid;
@@ -276,8 +274,8 @@ const letters = Math.max(...nameParts.map((part) => part.text.length));
 
   /* ---------------------------------------------------------------------------------------
      The sequence. Upright works hang left and right in turn, beside a large label; wide works
-     take the full width. Each keeps its own proportions, hangs in its frame and washes the wall
-     with its own colours.
+     take the full width. Each keeps its own proportions and washes the wall with its own
+     colours.
      --------------------------------------------------------------------------------------- */
   .sequence {
     padding: var(--gap-works) var(--gutter) 0;
@@ -289,11 +287,11 @@ const letters = Math.max(...nameParts.map((part) => part.text.length));
     gap: var(--gap-works);
   }
 
-  /* Each work, with its frame and its label, fits on screen below the menu, so that it can settle
-     in the middle of the screen as the page scrolls (data-snap, see global.css). --room is the
-     height left for the work itself: the screen, less the menu, the frame above and below it, the
-     label (below the work on phones and for wide works; beside upright works on wide screens) and
-     a little air. */
+  /* Each work, with its label, fits on screen below the menu, so that it can settle in the
+     middle of the screen as the page scrolls (data-snap, see global.css). --room is the height
+     left for the work itself: the screen, less the menu, the space kept above and below the work,
+     the label (below the work on phones and for wide works; beside upright works on wide screens)
+     and a little air. */
   .work {
     --work-title-size: clamp(1.875rem, 1.3rem + 2.4vw, 3.5rem);
     --label-room: calc(5.5rem + 1.05 * var(--work-title-size));
@@ -424,7 +422,7 @@ const letters = Math.max(...nameParts.map((part) => part.text.length));
 
   /* Where the browser supports scroll-linked animation: each work comes out of the dark as it
      reaches the middle of the screen and dims again as it leaves, and it glides a little faster
-     than its frame, as if hanging in front of the wall. Elsewhere the gentle fade-in from
+     than the page, as if hanging in front of the wall. Elsewhere the gentle fade-in from
      global.css is used instead.
      Written with separate animation-* properties on purpose: the CSS minifier would otherwise
      fold the timeline into the animation shorthand, which browsers reject. */

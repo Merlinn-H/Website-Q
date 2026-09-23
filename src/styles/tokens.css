@@ -32,8 +32,9 @@
 
   /* Space --------------------------------------------------------------------------------- */
   --gutter: clamp(1rem, 4vw, 3.5rem);   /* page edges */
-  --header-h: 4.5rem;                   /* height of the top bar */
+  --header-h: clamp(2.75rem, 2rem + 4vmin, 4.5rem); /* height of the top bar: slimmer on phones */
   --page-top: calc(var(--header-h) + clamp(0.5rem, 2vh, 1.5rem)); /* where content starts */
+  --footer-slim: clamp(2.25rem, 1.5rem + 2vh, 2.75rem); /* the one-line footer of work pages */
   --gap-works: clamp(6rem, 22vh, 14rem); /* distance between works in the gallery */
   --measure: 38rem;                     /* comfortable line length for reading */
   --page-max: 96rem;                    /* widest text layout on very large screens */
@@ -43,9 +44,8 @@
   --bleed-size: clamp(2.5rem, 7vw, 7rem);         /* how far they run sideways */
   --bleed-size-vertical: clamp(3rem, 9vh, 8rem);  /* how far they run up and down */
   --bleed-blur: clamp(10px, 1.4vw, 22px);         /* how soft they are */
-  --frame-gap: clamp(0.75rem, 2vw, 1.75rem);      /* space between a work and its frame on the wall */
-  --frame-line: rgb(235 229 217 / 0.22);          /* the frame's hairline (transparent hides it) */
-  --parallax: 1.4;                                /* how far a work glides against its frame, in frame gaps */
+  --frame-gap: clamp(0.75rem, 2vw, 1.75rem);      /* empty space kept around each work in the gallery */
+  --parallax: 1.4;                                /* how far a work glides as the page scrolls, in frame gaps */
   --wall-light: 0.05;                             /* faint light falling from the top of the screen */
   --vignette: 0.6;                                /* shadow deepening towards the edges of the screen */
   --grain-opacity: 0.16;                          /* fine, still grain on the background */
