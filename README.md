@@ -305,7 +305,8 @@ the same place; the Gallery link in the header does the same without JavaScript.
 itself opens it full screen, where it can be zoomed.
 
 In browsers that support page transitions (such as Chrome and Edge), the work you click grows
-into its own page and back again; elsewhere the page simply changes. All movement (smooth
+into its own page and back again, its colour bleed travelling with it; elsewhere the page simply
+changes. All movement (smooth
 scrolling, the light and parallax effects, the page transitions) is switched off for visitors
 whose device asks for reduced motion. Browsers that do not support an effect simply show the page
 without it.

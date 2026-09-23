@@ -42,10 +42,16 @@ const socialImageUrl = socialImage && new URL(socialImage.src, Astro.site).href;
 
     <script is:inline>
       // Page transitions, way back: arriving on the gallery from a work page, that work (if on
-      // screen) grows back into place. Must run before the page first appears, hence inline here.
+      // screen) and its colour bleed glide back into place. Must run before the page first
+      // appears, hence inline here.
       addEventListener('pagereveal', (event) => {
         const links = [...document.querySelectorAll('a[data-artwork-link]')];
-        for (const link of links) link.style.removeProperty('view-transition-name');
+        const bleedOf = (link) => link.closest('.plate')?.querySelector('.bleed');
+        const unname = (el) => el?.style.removeProperty('view-transition-name');
+        for (const link of links) {
+          unname(link);
+          unname(bleedOf(link));
+        }
         const from = window.navigation?.activation?.from?.url;
         if (!event.viewTransition || !from) return;
         const path = new URL(from).pathname;
@@ -54,8 +60,19 @@ const socialImageUrl = socialImage && new URL(socialImage.src, Astro.site).href;
           return link.pathname === path && box.bottom > 0 && box.top < innerHeight;
         });
         if (!match) return;
+        const bleed = bleedOf(match);
         match.style.viewTransitionName = 'artwork';
-        event.viewTransition.finished.finally(() => match.style.removeProperty('view-transition-name'));
+        if (bleed) bleed.style.viewTransitionName = 'artwork-bleed';
+        // The work lands already lit: the gallery's opening fade-in is meant for a first visit.
+        for (const el of [match, bleed]) {
+          for (const animation of el?.getAnimations({ subtree: true }) ?? []) {
+            if (animation.timeline === document.timeline) animation.finish();
+          }
+        }
+        event.viewTransition.finished.finally(() => {
+          unname(match);
+          unname(bleed);
+        });
       });
     </script>
     <Font cssVariable="--font-display-face" preload={[{ weight: 400, style: 'italic' }]} />

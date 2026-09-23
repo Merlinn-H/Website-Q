@@ -216,6 +216,11 @@ const socialImage = await socialImageFor(work);
     object-fit: contain;
   }
 
+  /* The bleed travels with the work during page transitions (see global.css). */
+  .stage-plate :global(.bleed) {
+    view-transition-name: artwork-bleed;
+  }
+
   .stage-plate:has(.stage-work:hover) :global(.bleed) {
     opacity: min(1, var(--bleed-opacity) * 1.2);
   }

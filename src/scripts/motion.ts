@@ -47,11 +47,11 @@ if (items.length && 'IntersectionObserver' in window && !CSS.supports('animation
   document.documentElement.classList.add('reveal-ready');
 }
 
-// Page transitions: the artwork that was clicked grows into its own page. Only that image gets
-// the shared name "artwork" (work pages give it to their main image in CSS), so the name stays
-// unique. The way back is handled by a small script in the page head (BaseLayout.astro),
-// because it has to run before the page first appears. Browsers without cross-page view
-// transitions simply change page.
+// Page transitions: the artwork that was clicked grows into its own page, its colour bleed
+// travelling with it. Only that image and its bleed get the shared names "artwork" and
+// "artwork-bleed" (work pages give them to their own in CSS), so the names stay unique. The way
+// back is handled by a small script in the page head (BaseLayout.astro), because it has to run
+// before the page first appears. Browsers without cross-page view transitions simply change page.
 let clicked: HTMLElement | undefined;
 
 addEventListener(
@@ -64,5 +64,8 @@ addEventListener(
 
 addEventListener('pageswap', (event) => {
   const { viewTransition } = event as Event & { viewTransition?: object | null };
-  if (viewTransition && clicked) clicked.style.viewTransitionName = 'artwork';
+  if (!viewTransition || !clicked) return;
+  clicked.style.viewTransitionName = 'artwork';
+  const bleed = clicked.closest('.plate')?.querySelector<HTMLElement>('.bleed');
+  if (bleed) bleed.style.viewTransitionName = 'artwork-bleed';
 });

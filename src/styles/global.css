@@ -296,8 +296,9 @@ body::after {
 }
 
 /* Page transitions -------------------------------------------------------------------------
- * Pages cross-fade, and the artwork that was clicked grows into its own page (the name
- * "artwork" is given to it by src/scripts/motion.ts). Off for reduced motion. */
+ * Pages cross-fade, and the artwork that was clicked grows into its own page with its colour
+ * bleed (the names "artwork" and "artwork-bleed" are given to them by src/scripts/motion.ts).
+ * Off for reduced motion. */
 
 @media (prefers-reduced-motion: no-preference) {
   @view-transition {
@@ -309,9 +310,27 @@ body::after {
     animation-duration: 0.55s;
   }
 
-  ::view-transition-group(artwork) {
+  /* The work and its colour bleed move together: same duration, same curve. The work is kept
+   * whole inside its moving box, so it cannot spill out of it when it turns into a work of other
+   * proportions (previous/next); the bleed, only soft colour, is stretched to its box. */
+  ::view-transition-group(artwork),
+  ::view-transition-group(artwork-bleed) {
     animation-duration: 0.9s;
     animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  ::view-transition-old(artwork),
+  ::view-transition-new(artwork) {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  ::view-transition-old(artwork-bleed),
+  ::view-transition-new(artwork-bleed) {
+    width: 100%;
+    height: 100%;
+    object-fit: fill;
   }
 }
 
