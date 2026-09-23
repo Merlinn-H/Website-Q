@@ -49,6 +49,7 @@
   --wall-light: 0.05;                             /* faint light falling from the top of the screen */
   --vignette: 0.6;                                /* shadow deepening towards the edges of the screen */
   --grain-opacity: 0.16;                          /* fine, still grain on the background */
+  --room-light: 0.24;                             /* how strongly the room takes the colour of the work in view */
 
   /* Motion (switched off when the visitor asks for reduced motion) ------------------------- */
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);

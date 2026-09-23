@@ -146,6 +146,7 @@ More settings in the same file control the atmosphere (`0` turns an effect off):
 - `--wall-light`: the faint light falling from the top of the screen.
 - `--vignette`: the shadow deepening towards the edges of the screen.
 - `--grain-opacity`: the fine, still grain on the background.
+- `--room-light`: how strongly the room takes on the colour of the work in view.
 
 None of them ever covers or changes the artwork itself: the bleed is drawn behind the work, from a
 tiny copy of it made automatically when the site is built.
@@ -295,7 +296,9 @@ cropped; tapping or clicking an artwork opens it full screen, where it can be zo
 shade appears behind it only once the page has scrolled, so it never darkens a work at rest.
 
 The gallery opens on the featured work with the name set around it. The colours at the edges of
-each work wash softly onto the wall around it. As the page scrolls, each work comes out of the
+each work wash softly onto the wall around it, and the room itself takes on the colour of the work
+in view: a soft light in the work's own colour sits behind it and glides to the next work as the
+page scrolls. On a work's page it lights the wall behind the work, like a spotlight. As the page scrolls, each work comes out of the
 dark as it reaches the middle of the screen and glides a little faster than the page, as if
 hanging in front of the wall. Upright works hang left or right
 in turn beside their title and number; wide works take the full width. Each work is sized so that

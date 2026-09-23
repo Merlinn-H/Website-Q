@@ -78,6 +78,8 @@ const socialImageUrl = socialImage && new URL(socialImage.src, Astro.site).href;
     }
   </head>
   <body>
+    {/* The room light (see global.css), kept from page to page so it can glide between works. */}
+    <div class="room-light" aria-hidden="true" transition:persist="room-light"></div>
     <a class="skip-link" href="#main">Skip to content</a>
     <SiteHeader />
     <main id="main" tabindex="-1">
@@ -86,6 +88,7 @@ const socialImageUrl = socialImage && new URL(socialImage.src, Astro.site).href;
     <SiteFooter compact={focus} />
 
     <script>
+      import '../scripts/light';
       import '../scripts/motion';
       import '../scripts/transitions';
       import '../scripts/backdrop';

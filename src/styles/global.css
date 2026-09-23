@@ -259,6 +259,61 @@ body::after {
   opacity: var(--grain-opacity);
 }
 
+/* Room light: the wall takes the colour of the work in view, as if the room were lit by its
+ * paintings. One layer for the whole site (kept from page to page, see BaseLayout.astro): a soft
+ * pool of the work's dominant colour, behind the work and sized to it, that glides from one work
+ * to the next. src/scripts/light.ts sets the colour, position and size; without JavaScript the
+ * room stays dark. Its strength is --room-light in tokens.css. */
+@property --light {
+  syntax: '<color>';
+  inherits: false;
+  initial-value: transparent;
+}
+
+@property --light-x {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: 50%;
+}
+
+@property --light-y {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: 45%;
+}
+
+@property --light-w {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: 60%;
+}
+
+@property --light-h {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: 55%;
+}
+
+.room-light {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(
+    var(--light-w) var(--light-h) at var(--light-x) var(--light-y),
+    color-mix(in srgb, var(--light) calc(var(--room-light) * 100%), transparent),
+    color-mix(in srgb, var(--light) calc(var(--room-light) * 75%), transparent) 40%,
+    color-mix(in srgb, var(--light) calc(var(--room-light) * 30%), transparent) 70%,
+    transparent
+  );
+  transition:
+    --light 1.6s ease,
+    --light-x 1.2s var(--ease-out),
+    --light-y 1.2s var(--ease-out),
+    --light-w 1.2s var(--ease-out),
+    --light-h 1.2s var(--ease-out);
+}
+
 /* Plate: the box of a work as it hangs on the wall. It holds the bleed of its colours, behind
  * the work itself (a link). */
 .plate {
