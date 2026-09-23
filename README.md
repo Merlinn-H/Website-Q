@@ -140,6 +140,9 @@ More settings in the same file control the atmosphere (`0` turns an effect off):
 - `--bleed-opacity`: how strongly the colours at the edges of each work run out onto the page.
 - `--bleed-size` and `--bleed-size-vertical`: how far they run sideways, and up and down.
 - `--bleed-blur`: how soft they are.
+- `--frame-gap`: the space between each work and the fine frame drawn on the wall around it.
+- `--frame-line`: the colour of that frame (`transparent` hides it).
+- `--parallax`: how far a work glides against its frame as the page scrolls.
 - `--wall-light`: the faint light falling from the top of the screen.
 - `--vignette`: the shadow deepening towards the edges of the screen.
 - `--grain-opacity`: the fine, still grain on the background.
@@ -288,11 +291,20 @@ variable named `SITE_URL` with the value `https://www.yourdomain.com`, and redep
 cookies and loads nothing from other companies; every image keeps its own proportions and is never
 cropped; tapping or clicking an artwork opens it full screen, where it can be zoomed.
 
-The gallery opens on the featured work with the name set around it. The colours at the edges of
-each work bleed out onto the dark wall around it; each work comes out of the dark as it reaches the
-middle of the screen, and hangs left or right in turn beside its title and number (upright works)
-or across the full width (wide works). On a work page, an upright work hangs beside its label on
-large screens. In browsers that support page transitions (such as Chrome and Edge), the work you
-click grows into its own page; elsewhere the page simply changes. All movement (smooth scrolling,
-the light effects, the page transitions) is switched off for visitors whose device asks for
-reduced motion. Browsers that do not support an effect simply show the page without it.
+The gallery opens on the featured work with the name set around it. Each work hangs in a fine
+frame drawn on the wall, and the colours at its edges wash softly onto the wall around it. As the
+page scrolls, each work comes out of the dark as it reaches the middle of the screen and glides a
+little faster than its frame, as if hanging in front of the wall. Upright works hang left or right
+in turn beside their title and number; wide works take the full width.
+
+A work page shows everything on one screen: the work in its frame, its number, title, details,
+shop buttons and the links to the previous and next works (the work beside its label on computers,
+above it on phones). A click on the empty background, or the Escape key, returns to the gallery at
+the same place; the Gallery link in the header does the same without JavaScript. Clicking the work
+itself opens it full screen, where it can be zoomed.
+
+In browsers that support page transitions (such as Chrome and Edge), the work you click grows
+into its own page and back again; elsewhere the page simply changes. All movement (smooth
+scrolling, the light and parallax effects, the page transitions) is switched off for visitors
+whose device asks for reduced motion. Browsers that do not support an effect simply show the page
+without it.

@@ -46,14 +46,17 @@ const letters = Math.max(...nameParts.map((part) => part.text.length));
     </h1>
     {
       featured && (
-        <a class="hero-work" href={workPath(featured)} data-artwork-link>
+        <div class="hero-plate plate">
           <Bleed work={featured} />
-          <ArtworkPicture
-            work={featured}
-            priority
-            sizes={`min(calc(100vw - 2rem), calc((100vh - 7.5rem) * ${ratio(featured.ratio)}))`}
-          />
-        </a>
+          <span class="frame" aria-hidden="true" />
+          <a class="hero-work" href={workPath(featured)} data-artwork-link>
+            <ArtworkPicture
+              work={featured}
+              priority
+              sizes={`min(calc(100vw - 2rem), calc((100vh - 7.5rem) * ${ratio(featured.ratio)}))`}
+            />
+          </a>
+        </div>
       )
     }
   </section>
@@ -65,22 +68,26 @@ const letters = Math.max(...nameParts.map((part) => part.text.length));
         works.map((work, index) => (
           <li
             class="work"
+            id={work.id}
             data-reveal="fallback"
             data-shape={work.shape}
             data-side={index % 2 === 0 ? 'left' : 'right'}
           >
             <figure style={`--ratio: ${ratio(work.ratio)}`}>
-              <a class="work-link" href={workPath(work)} data-artwork-link>
+              <div class="work-plate plate">
                 <Bleed work={work} />
-                <ArtworkPicture
-                  work={work}
-                  sizes={
-                    work.shape === 'upright'
-                      ? `(min-width: 64em) min(58vw, ${(82 * work.ratio).toFixed(2)}vh), min(calc(100vw - 2rem), ${(82 * work.ratio).toFixed(2)}vh)`
-                      : `min(calc(100vw - 2rem), ${(82 * work.ratio).toFixed(2)}vh)`
-                  }
-                />
-              </a>
+                <span class="frame" aria-hidden="true" />
+                <a class="work-link" href={workPath(work)} data-artwork-link>
+                  <ArtworkPicture
+                    work={work}
+                    sizes={
+                      work.shape === 'upright'
+                        ? `(min-width: 64em) min(58vw, ${(82 * work.ratio).toFixed(2)}vh), min(calc(100vw - 2rem), ${(82 * work.ratio).toFixed(2)}vh)`
+                        : `min(calc(100vw - 2rem), ${(82 * work.ratio).toFixed(2)}vh)`
+                    }
+                  />
+                </a>
+              </div>
               <figcaption class="on-bleed">
                 <span class="work-numeral" aria-hidden="true">
                   {work.numeral}
@@ -98,11 +105,11 @@ const letters = Math.max(...nameParts.map((part) => part.text.length));
 
 <style>
   /* ---------------------------------------------------------------------------------------
-     Opening screen. The featured work, whole and uncropped, glows in the dark, with the name
-     set around it: a one-word name bottom right; otherwise first word top left, the rest
-     bottom right. Every size below is worked out from the screen size, the work's proportions
-     and the length of the name, so nothing moves while loading and the name can never touch
-     the work.
+     Opening screen. The featured work, whole and uncropped, hangs in its frame with its colours
+     washing the wall, and the name is set around it: a one-word name bottom right; otherwise
+     first word top left, the rest bottom right. Every size below is worked out from the screen
+     size, the work's proportions, its frame and the length of the name, so nothing moves while
+     loading and the name can never touch the work or its frame.
      - stack: the name sits above and/or below the work (phones, and wide works).
      - sides: on wide screens an upright work takes the full height and the name sits beside it.
      --------------------------------------------------------------------------------------- */
@@ -118,7 +125,10 @@ const letters = Math.max(...nameParts.map((part) => part.text.length));
     --word-size: min(var(--word-vh), var(--word-max), (100vw - 2 * var(--gutter)) / var(--word-em));
     /* One line of the name plus its italic descenders (the tail of the Q, the p) and a gap. */
     --band: calc(1.3 * var(--word-size) + var(--gap));
-    --work-w: min(100%, (var(--stage-h) - var(--lines) * var(--band)) * var(--ratio));
+    --work-w: min(
+      100% - 2 * var(--frame-gap),
+      (var(--stage-h) - var(--lines) * var(--band) - 2 * var(--frame-gap)) * var(--ratio)
+    );
 
     position: relative;
     display: grid;
@@ -147,22 +157,26 @@ const letters = Math.max(...nameParts.map((part) => part.text.length));
 
   @media (min-width: 64em) and (min-aspect-ratio: 3/2) {
     .hero[data-layout='sides'] {
+      --work-w: min(
+        100% - 2 * var(--frame-gap),
+        (var(--stage-h) - 2 * var(--frame-gap)) * var(--ratio)
+      );
       --side: calc(
-        (100vw - 2 * var(--gutter) - var(--stage-h) * var(--ratio)) / 2 - 2 * var(--gap)
+        (100vw - 2 * var(--gutter) - (var(--stage-h) - 2 * var(--frame-gap)) * var(--ratio)) / 2 -
+          var(--frame-gap) - 2 * var(--gap)
       );
       --word-size: clamp(2rem, var(--side) / var(--word-em), var(--word-max-sides));
-      --work-w: min(100%, var(--stage-h) * var(--ratio));
 
       padding-bottom: var(--pad-bottom);
     }
 
-    /* The name hugs the work: first word against its top left edge, last (or only) word
-       against its bottom right edge. The middle column is exactly as wide as the work. */
+    /* The name hugs the frame: first word against its top left, last (or only) word against its
+       bottom right. The middle column is exactly as wide as the work. */
     .hero[data-layout='sides'] .hero-name {
       display: grid;
       grid-template-columns: 1fr var(--work-w) 1fr;
       grid-template-rows: auto 1fr auto;
-      column-gap: calc(2 * var(--gap));
+      column-gap: calc(var(--frame-gap) + 2 * var(--gap));
     }
 
     .hero[data-layout='sides'] .hero-word--start {
@@ -180,10 +194,7 @@ const letters = Math.max(...nameParts.map((part) => part.text.length));
     }
   }
 
-  .hero-work {
-    position: relative;
-    isolation: isolate;
-    display: block;
+  .hero-plate {
     width: var(--work-w);
   }
 
@@ -231,7 +242,7 @@ const letters = Math.max(...nameParts.map((part) => part.text.length));
       animation: lights-up 2.4s var(--ease-out) both;
     }
 
-    .hero-work :global(.bleed) {
+    .hero-plate :global(.bleed) {
       animation: glow-up 3.2s var(--ease-out) both;
     }
 
@@ -265,7 +276,8 @@ const letters = Math.max(...nameParts.map((part) => part.text.length));
 
   /* ---------------------------------------------------------------------------------------
      The sequence. Upright works hang left and right in turn, beside a large label; wide works
-     take the full width. Each keeps its own proportions and glows with its own colours.
+     take the full width. Each keeps its own proportions, hangs in its frame and washes the wall
+     with its own colours.
      --------------------------------------------------------------------------------------- */
   .sequence {
     padding: var(--gap-works) var(--gutter) 0;
@@ -277,18 +289,19 @@ const letters = Math.max(...nameParts.map((part) => part.text.length));
     gap: var(--gap-works);
   }
 
-  figure {
-    display: grid;
-    gap: 1.5rem;
+  .work {
+    scroll-margin-top: 12vh;
   }
 
-  .work-link {
-    position: relative;
-    isolation: isolate;
-    display: block;
+  figure {
+    display: grid;
+    gap: calc(1.5rem + var(--frame-gap));
+  }
+
+  .work-plate {
     justify-self: center;
-    width: min(100%, 82vh * var(--ratio));
-    width: min(100%, 82svh * var(--ratio));
+    width: min(100% - 2 * var(--frame-gap), 82vh * var(--ratio));
+    width: min(100% - 2 * var(--frame-gap), 82svh * var(--ratio));
   }
 
   .work-link :global(img) {
@@ -298,7 +311,7 @@ const letters = Math.max(...nameParts.map((part) => part.text.length));
     object-fit: contain;
   }
 
-  .work-link:hover :global(.bleed) {
+  .work-plate:has(.work-link:hover) :global(.bleed) {
     opacity: min(1, var(--bleed-opacity) * 1.2);
   }
 
@@ -358,7 +371,7 @@ const letters = Math.max(...nameParts.map((part) => part.text.length));
       align-items: end;
     }
 
-    .work[data-shape='upright'] .work-link {
+    .work[data-shape='upright'] .work-plate {
       grid-column: 1 / span 7;
       justify-self: end;
     }
@@ -368,7 +381,7 @@ const letters = Math.max(...nameParts.map((part) => part.text.length));
       padding-bottom: 0.5rem;
     }
 
-    .work[data-shape='upright'][data-side='right'] .work-link {
+    .work[data-shape='upright'][data-side='right'] .work-plate {
       grid-column: 6 / span 7;
       grid-row: 1;
       justify-self: start;
@@ -379,7 +392,7 @@ const letters = Math.max(...nameParts.map((part) => part.text.length));
       grid-row: 1;
     }
 
-    .work[data-shape='wide'] .work-link {
+    .work[data-shape='wide'] .work-plate {
       grid-column: 1 / -1;
     }
 
@@ -392,41 +405,74 @@ const letters = Math.max(...nameParts.map((part) => part.text.length));
     }
   }
 
-  /* Where the browser supports scroll-linked animation, each work comes out of the dark as it
-     reaches the middle of the screen and dims again as it leaves, like walking past spotlit
-     paintings. Elsewhere the gentle fade-in from global.css is used instead. */
+  /* Where the browser supports scroll-linked animation: each work comes out of the dark as it
+     reaches the middle of the screen and dims again as it leaves, and it glides a little faster
+     than its frame, as if hanging in front of the wall. Elsewhere the gentle fade-in from
+     global.css is used instead.
+     Written with separate animation-* properties on purpose: the CSS minifier would otherwise
+     fold the timeline into the animation shorthand, which browsers reject. */
   @supports (animation-timeline: view()) {
     @media (prefers-reduced-motion: no-preference) {
       .work {
         view-timeline-name: --work;
       }
 
-      .work-link {
-        animation: emerge linear both;
+      .work-plate,
+      .work-link,
+      .work-plate :global(.bleed),
+      figcaption {
+        animation-timing-function: linear;
+        animation-fill-mode: both;
         animation-timeline: --work;
         animation-range: cover 0% cover 100%;
       }
 
+      .work-plate {
+        animation-name: emerge;
+      }
+
+      .work-link,
+      .work-plate :global(.bleed) {
+        animation-name: glide;
+      }
+
       figcaption {
-        animation: caption-in linear both;
-        animation-timeline: --work;
+        animation-name: caption-in;
         animation-range: entry 40% cover 45%;
       }
 
-      .hero-work {
-        animation: hero-out linear both;
+      .hero-plate,
+      .hero-work,
+      .hero-word {
+        animation-timing-function: linear;
+        animation-fill-mode: both;
         animation-timeline: scroll(root);
         animation-range: 0 100vh;
       }
 
-      .hero-word {
-        animation: drift-up linear both;
-        animation-timeline: scroll(root);
-        animation-range: 0 100vh;
+      .hero-plate {
+        animation-name: hero-out;
+      }
+
+      .hero-work {
+        animation-name: lift;
+      }
+
+      .hero-word--start {
+        animation-name: drift-up;
       }
 
       .hero-word--end {
         animation-name: drift-down;
+      }
+
+      .hero-plate :global(.bleed) {
+        animation-name: glow-up, lift;
+        animation-duration: 3.2s, auto;
+        animation-timing-function: var(--ease-out), linear;
+        animation-fill-mode: both;
+        animation-timeline: auto, scroll(root);
+        animation-range: normal, 0 100vh;
       }
     }
   }
@@ -446,6 +492,22 @@ const letters = Math.max(...nameParts.map((part) => part.text.length));
     100% {
       filter: brightness(0.5);
       transform: scale(0.98);
+    }
+  }
+
+  @keyframes glide {
+    from {
+      transform: translateY(calc(var(--frame-gap) * var(--parallax)));
+    }
+
+    to {
+      transform: translateY(calc(var(--frame-gap) * var(--parallax) * -1));
+    }
+  }
+
+  @keyframes lift {
+    to {
+      transform: translateY(calc(var(--frame-gap) * var(--parallax) * -2));
     }
   }
 

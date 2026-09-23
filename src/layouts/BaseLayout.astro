@@ -59,7 +59,13 @@ const socialImageUrl = socialImage && new URL(socialImage.src, Astro.site).href;
       });
     </script>
     <Font cssVariable="--font-display-face" preload={[{ weight: 400, style: 'italic' }]} />
-    <Font cssVariable="--font-ui-face" preload={[{ weight: 500, style: 'normal' }]} />
+    <Font
+      cssVariable="--font-ui-face"
+      preload={[
+        { weight: 500, style: 'normal' },
+        { weight: 400, style: 'normal' },
+      ]}
+    />
 
     <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />

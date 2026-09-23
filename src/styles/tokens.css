@@ -40,10 +40,13 @@
   --page-max: 96rem;                    /* widest text layout on very large screens */
 
   /* Atmosphere (0 turns an effect off) ----------------------------------------------------- */
-  --bleed-opacity: 0.75;                          /* colours at the edges of each work running onto the page */
-  --bleed-size: clamp(4rem, 14vw, 16rem);         /* how far they run sideways */
-  --bleed-size-vertical: clamp(5rem, 18vh, 17rem); /* how far they run up and down */
-  --bleed-blur: clamp(12px, 1.8vw, 28px);         /* how soft they are */
+  --bleed-opacity: 0.8;                           /* colours at the edges of each work running onto the page */
+  --bleed-size: clamp(2.5rem, 7vw, 7rem);         /* how far they run sideways */
+  --bleed-size-vertical: clamp(3rem, 9vh, 8rem);  /* how far they run up and down */
+  --bleed-blur: clamp(10px, 1.4vw, 22px);         /* how soft they are */
+  --frame-gap: clamp(0.75rem, 2vw, 1.75rem);      /* space between a work and its frame on the wall */
+  --frame-line: rgb(235 229 217 / 0.22);          /* the frame's hairline (transparent hides it) */
+  --parallax: 1.4;                                /* how far a work glides against its frame, in frame gaps */
   --wall-light: 0.05;                             /* faint light falling from the top of the screen */
   --vignette: 0.6;                                /* shadow deepening towards the edges of the screen */
   --grain-opacity: 0.16;                          /* fine, still grain on the background */

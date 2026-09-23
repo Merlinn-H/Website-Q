@@ -8,10 +8,11 @@ interface Props {
 
 const { work } = Astro.props;
 
-// A tiny copy of the artwork (a few hundred bytes). CSS stretches its outermost rows and columns
-// of pixels outwards on every side, blurs them and fades them out, so the colours at the edges of
-// the work bleed onto the page. It always sits behind the work, never over it (see global.css).
-const tiny = await getImage({ src: work.image, width: 64, format: 'webp', quality: 80 });
+// A tiny copy of the artwork, 8 pixels wide, so each pixel along an edge is the average colour of
+// a whole stretch of that edge. CSS stretches its outermost rows and columns outwards on every
+// side, blurs them and fades them out, so the colours of the work's edges wash onto the page. It
+// always sits behind the work, never over it (see global.css).
+const tiny = await getImage({ src: work.image, width: 8, format: 'png' });
 ---
 
 <span class="bleed" aria-hidden="true" style={`border-image-source: url(${tiny.src})`}></span>

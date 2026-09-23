@@ -231,10 +231,31 @@ body::after {
   opacity: var(--grain-opacity);
 }
 
-/* Bleed: the colours at the edges of a work run out onto the page (see Bleed.astro). The
+/* Plate: the box of a work as it hangs on the wall. It holds, from back to front, the bleed of
+ * its colours, its frame, and the work itself (a link). */
+.plate {
+  position: relative;
+  isolation: isolate;
+}
+
+.plate > a {
+  position: relative;
+  z-index: 2;
+  display: block;
+}
+
+/* Frame: a hairline on the wall around the work, a little larger than it. */
+.frame {
+  position: absolute;
+  inset: calc(-1 * var(--frame-gap));
+  z-index: 1;
+  border: 1px solid var(--frame-line);
+  pointer-events: none;
+}
+
+/* Bleed: the colours at the edges of a work run out onto the wall (see Bleed.astro). The
  * outermost pixels of a tiny copy of the work are stretched outwards on every side
- * (border-image slice 1), then blurred and faded, so each edge trails its own colours. The
- * parent must be position: relative and isolation: isolate, so the bleed stays behind the work. */
+ * (border-image slice 1), then blurred and faded, so each edge washes the wall in its colours. */
 .bleed {
   --reach-x: var(--bleed-size);
   --reach-y: var(--bleed-size-vertical);
@@ -249,7 +270,7 @@ body::after {
 
   position: absolute;
   inset: calc(-1 * var(--reach-y)) calc(-1 * var(--reach-x));
-  z-index: -1;
+  z-index: 0;
   border: 0 solid transparent;
   border-image-slice: 1 fill;
   border-image-width: var(--reach-y) var(--reach-x);
@@ -303,8 +324,12 @@ body::after {
 
 @supports (animation-timeline: view()) {
   @media screen and (prefers-reduced-motion: no-preference) {
+    /* Separate properties on purpose: the minifier would otherwise fold the timeline into the
+     * animation shorthand, which browsers reject. */
     [data-reveal]:not([data-reveal='fallback']) {
-      animation: reveal linear both;
+      animation-name: reveal;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
       animation-timeline: view();
       animation-range: entry 0% entry 70%;
     }
