@@ -111,7 +111,7 @@ const onScreen = (el: Element) => {
   return bottom > 0 && top < innerHeight;
 };
 
-// An open menu or full-screen view covers the page: nothing under it should fly over it.
+// The full-screen view (or any popover) covers the page: nothing under it should fly over it.
 const covered = () => {
   try {
     return !!document.querySelector('dialog[open], :popover-open');

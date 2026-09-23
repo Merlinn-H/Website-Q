@@ -101,7 +101,7 @@ What each line does:
 | `featured` | `true` for the one work that opens the gallery full screen, `false` for the others. If several say `true`, the one with the lowest `order` is used. If none does, the first work is used. |
 | `order` | A number. Works appear in the gallery, and in Previous / Next on the work pages, from the lowest number to the highest. |
 | `status` | `available`, `sold` or `not-for-sale`. Until you know, it can stay as the placeholder, which the work page then shows as written. |
-| `etsyUrl` | Optional. The Etsy listing of the original. The **Original on Etsy** button only appears while `status` is `available`. |
+| `etsyUrl` | Optional. The Etsy listing of the original. The **Original on Etsy** button appears while `status` is `available` (or still a placeholder), and disappears once the work is `sold` or `not-for-sale`. |
 | `printsUrl` | Optional. The page where prints of this work can be ordered. The **Prints** button appears whenever this line exists, including when the original is sold. |
 
 Web addresses must be complete, starting with `https://`. Leave a line out entirely rather than
@@ -116,9 +116,9 @@ second `---` line is ignored.
 **To remove a work**, delete its folder.
 
 **The works already on the site** are in `src/content/works/work-01/`, `work-02/` and `work-03/`.
-Their title, year, medium, dimensions and availability are still placeholders: open each
-`index.md` and fill them in. You can also rename the folders (the web address follows the folder
-name). `work-01` is the featured work.
+Their title, year, medium, dimensions, availability, Etsy address and prints address are still
+placeholders: open each `index.md` and fill them in. You can also rename the folders (the web
+address follows the folder name). `work-01` is the featured work.
 
 ## 4. Changing colours and fonts
 
@@ -128,7 +128,6 @@ All of these live in one file: **`src/styles/tokens.css`**. Every value there is
 proposal. Change the hexadecimal colour codes (such as `#0f0d0b`) and save.
 
 - `--colour-bg`: the warm near-black background.
-- `--colour-bg-raised`: the background of the mobile menu and the full-screen viewer.
 - `--colour-text`: the bone-coloured text.
 - `--colour-text-muted`: labels and secondary text.
 - `--colour-accent`: the muted brass used for focus outlines, the current page and hover.
@@ -155,8 +154,8 @@ tiny copy of it made automatically when the site is built.
 
 ### Fonts
 
-The two fonts are **Cormorant Garamond** (the serif for the name, titles and statement) and
-**Instrument Sans** (the sans serif for navigation, labels and body text). Both are free,
+The two fonts are **Instrument Serif** (the serif for the name, titles and statement) and its
+sister **Instrument Sans** (the sans serif for navigation, labels and body text). Both are free,
 open-licence fonts from [Fontsource](https://fontsource.org), and the files are served from your
 own site, so visitors' browsers never contact another company.
 
@@ -197,7 +196,8 @@ are real), so nothing breaks in the meantime.
 | `src/content/about/index.md` | `[PLACEHOLDER: artist statement]` | The statement, below the second `---` line. Separate paragraphs with an empty line. |
 | `src/content/about/index.md` | `[PLACEHOLDER: portrait description, read aloud by screen readers]` | Only needed if you add a portrait (see below). |
 | `src/pages/privacy.astro` | `[PLACEHOLDER: server log retention period under the Vercel plan in use]` | How long Vercel keeps server logs for your plan. |
-| `src/content/works/work-01/`, `work-02/`, `work-03/` (`index.md`) | `[PLACEHOLDER: title]`, `[PLACEHOLDER: year]`, `[PLACEHOLDER: medium]`, `[PLACEHOLDER: dimensions]`, `[PLACEHOLDER: available, sold or not-for-sale]` | The details of each work (see section 3). Add `etsyUrl` and `printsUrl` lines to show the shop buttons. |
+| `src/content/works/work-01/`, `work-02/`, `work-03/` (`index.md`) | `[PLACEHOLDER: title]`, `[PLACEHOLDER: year]`, `[PLACEHOLDER: medium]`, `[PLACEHOLDER: dimensions]`, `[PLACEHOLDER: available, sold or not-for-sale]` | The details of each work (see section 3). |
+| `src/content/works/work-01/`, `work-02/`, `work-03/` (`index.md`) | `[PLACEHOLDER: Etsy listing URL]`, `[PLACEHOLDER: prints URL for this work]` | The Etsy listing of the original and the page where prints of the work are ordered. They fill the **Original on Etsy** and **Prints** buttons on the work's page. Delete a line to remove its button. |
 
 **The portrait on the About page** is optional and hidden by default, because the artist is
 anonymous. To show one, put a single image file in `src/content/about/` and describe it in the
@@ -292,24 +292,28 @@ variable named `SITE_URL` with the value `https://www.yourdomain.com`, and redep
 
 **How the site behaves**, for reference: it works fully with JavaScript switched off; it sets no
 cookies and loads nothing from other companies; every image keeps its own proportions and is never
-cropped; tapping or clicking an artwork opens it full screen, where it can be zoomed.
+cropped; tapping or clicking an artwork opens it full screen, where it can be zoomed. The menu
+(Gallery, About, Contact) stays at the top of the screen on every page, phones included.
 
 The gallery opens on the featured work with the name set around it. Each work hangs in a fine
 frame drawn on the wall, and the colours at its edges wash softly onto the wall around it. As the
 page scrolls, each work comes out of the dark as it reaches the middle of the screen and glides a
 little faster than its frame, as if hanging in front of the wall. Upright works hang left or right
-in turn beside their title and number; wide works take the full width.
+in turn beside their title and number; wide works take the full width. Each work is sized so that
+it fits on screen with its title, below the menu, and it settles gently into place: when scrolling
+stops close to a work, the page glides until the work sits in the middle of the screen. Stop
+between two works and the page stays where it is.
 
 A work page shows everything on one screen: the work itself (without its gallery frame), its
 number, title, details, shop buttons and the links to the previous and next works (the work beside
-its label on computers, above it on phones). A click on the empty background, or the Escape key, returns to the gallery at
-the same place; the Gallery link in the header does the same without JavaScript. Clicking the work
-itself opens it full screen, where it can be zoomed.
+its label on computers, above it on phones). A click on the empty background, or the Escape key,
+returns to the gallery at the same place; the Gallery link in the menu does the same without
+JavaScript. Clicking the work itself opens it full screen, where it can be zoomed.
 
 Moving around the site never reloads the page: each page is fetched shortly before it is needed
 (as soon as a link to it has been on screen for a moment) and swapped in while the old one fades
 out. In browsers that support page transitions (such as Chrome and Edge), the work you click grows
 into its own page and back again, its colour bleed travelling with it; other browsers change page
-at once. All movement (smooth scrolling, the light and parallax effects, the page transitions) is
-switched off for visitors whose device asks for reduced motion. Browsers that do not support an
-effect simply show the page without it.
+at once. All movement (smooth scrolling, the pull towards each work, the light and parallax
+effects, the page transitions) is switched off for visitors whose device asks for reduced motion.
+Browsers that do not support an effect simply show the page without it.

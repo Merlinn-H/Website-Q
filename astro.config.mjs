@@ -42,19 +42,19 @@ export default defineConfig({
   fonts: [
     {
       provider: fontProviders.local(),
-      name: 'Cormorant Garamond', // serif for the name, titles and statement
+      name: 'Instrument Serif', // serif for the name, titles and statement
       cssVariable: '--font-display-face',
       fallbacks: ['serif'],
       options: {
         variants: [
           {
-            src: ['@fontsource/cormorant-garamond/files/cormorant-garamond-latin-400-normal.woff2'],
+            src: ['@fontsource/instrument-serif/files/instrument-serif-latin-400-normal.woff2'],
             weight: 400,
             style: 'normal',
             unicodeRange: latin,
           },
           {
-            src: ['@fontsource/cormorant-garamond/files/cormorant-garamond-latin-400-italic.woff2'],
+            src: ['@fontsource/instrument-serif/files/instrument-serif-latin-400-italic.woff2'],
             weight: 400,
             style: 'italic',
             unicodeRange: latin,

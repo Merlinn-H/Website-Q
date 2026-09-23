@@ -28,6 +28,7 @@ const letters = Math.max(...nameParts.map((part) => part.text.length));
 <BaseLayout socialImage={socialImage}>
   <section
     class="hero"
+    data-snap="start"
     data-layout={featured?.shape === 'upright' ? 'sides' : 'stack'}
     data-lines={nameParts.length}
     style={`--ratio: ${featured ? ratio(featured.ratio) : 1}; --letters: ${letters}; --lines: ${nameParts.length}`}
@@ -73,7 +74,7 @@ const letters = Math.max(...nameParts.map((part) => part.text.length));
             data-shape={work.shape}
             data-side={index % 2 === 0 ? 'left' : 'right'}
           >
-            <figure style={`--ratio: ${ratio(work.ratio)}`}>
+            <figure style={`--ratio: ${ratio(work.ratio)}`} data-snap="center">
               <div class="work-plate plate">
                 <Bleed work={work} />
                 <span class="frame" aria-hidden="true" />
@@ -82,8 +83,8 @@ const letters = Math.max(...nameParts.map((part) => part.text.length));
                     work={work}
                     sizes={
                       work.shape === 'upright'
-                        ? `(min-width: 64em) min(58vw, ${(82 * work.ratio).toFixed(2)}vh), min(calc(100vw - 2rem), ${(82 * work.ratio).toFixed(2)}vh)`
-                        : `min(calc(100vw - 2rem), ${(82 * work.ratio).toFixed(2)}vh)`
+                        ? `(min-width: 64em) min(58vw, calc((100vh - 10rem) * ${ratio(work.ratio)})), min(calc(100vw - 2rem), calc(max(55vh, 100vh - 19rem) * ${ratio(work.ratio)}))`
+                        : `min(calc(100vw - 2rem), calc(max(55vh, 100vh - 19rem) * ${ratio(work.ratio)}))`
                     }
                   />
                 </a>
@@ -215,7 +216,6 @@ const letters = Math.max(...nameParts.map((part) => part.text.length));
     font-size: var(--word-size);
     font-style: italic;
     line-height: 1;
-    letter-spacing: -0.01em;
     white-space: nowrap;
     pointer-events: none;
   }
@@ -289,8 +289,23 @@ const letters = Math.max(...nameParts.map((part) => part.text.length));
     gap: var(--gap-works);
   }
 
+  /* Each work, with its frame and its label, fits on screen below the menu, so that it can settle
+     in the middle of the screen as the page scrolls (data-snap, see global.css). --room is the
+     height left for the work itself: the screen, less the menu, the frame above and below it, the
+     label (below the work on phones and for wide works; beside upright works on wide screens) and
+     a little air. */
   .work {
-    scroll-margin-top: 12vh;
+    --work-title-size: clamp(1.875rem, 1.3rem + 2.4vw, 3.5rem);
+    --label-room: calc(5.5rem + 1.05 * var(--work-title-size));
+    --room: max(55vh, 100vh - var(--header-h) - 2 * var(--frame-gap) - var(--label-room) - 2rem);
+
+    scroll-margin-top: 1.5rem;
+  }
+
+  @supports (height: 100svh) {
+    .work {
+      --room: max(55svh, 100svh - var(--header-h) - 2 * var(--frame-gap) - var(--label-room) - 2rem);
+    }
   }
 
   figure {
@@ -300,8 +315,7 @@ const letters = Math.max(...nameParts.map((part) => part.text.length));
 
   .work-plate {
     justify-self: center;
-    width: min(100% - 2 * var(--frame-gap), 82vh * var(--ratio));
-    width: min(100% - 2 * var(--frame-gap), 82svh * var(--ratio));
+    width: min(100% - 2 * var(--frame-gap), var(--room) * var(--ratio));
   }
 
   .work-link :global(img) {
@@ -352,10 +366,9 @@ const letters = Math.max(...nameParts.map((part) => part.text.length));
   .work-title {
     max-width: 14em;
     font-family: var(--font-display);
-    font-size: clamp(1.875rem, 1.3rem + 2.4vw, 3.5rem);
+    font-size: var(--work-title-size);
     font-style: italic;
     line-height: 1.05;
-    letter-spacing: -0.01em;
     text-wrap: balance;
     transition: color 0.4s ease;
   }
@@ -369,6 +382,10 @@ const letters = Math.max(...nameParts.map((part) => part.text.length));
       grid-template-columns: repeat(12, minmax(0, 1fr));
       column-gap: var(--gutter);
       align-items: end;
+    }
+
+    .work[data-shape='upright'] {
+      --label-room: 0rem;
     }
 
     .work[data-shape='upright'] .work-plate {
@@ -525,16 +542,26 @@ const letters = Math.max(...nameParts.map((part) => part.text.length));
     }
   }
 
+  /* The name has faded out before the opening screen has gone, so none of it lingers behind the
+     menu. */
   @keyframes drift-up {
+    70% {
+      opacity: 0;
+    }
+
     to {
-      opacity: 0.25;
+      opacity: 0;
       transform: translateY(-10vh);
     }
   }
 
   @keyframes drift-down {
+    70% {
+      opacity: 0;
+    }
+
     to {
-      opacity: 0.25;
+      opacity: 0;
       transform: translateY(10vh);
     }
   }

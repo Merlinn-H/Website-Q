@@ -40,10 +40,33 @@ main:focus {
   outline: none;
 }
 
-/* Keep the page still behind the open menu or full-screen viewer */
-html:has(#site-menu:popover-open),
+/* Keep the page still behind the full-screen viewer */
 html:has(dialog[open]) {
   overflow: hidden;
+}
+
+/* The menu stays at the top of the screen: anything scrolled to (a work, a link target) lands
+ * below it. */
+html {
+  scroll-padding-top: var(--header-h);
+}
+
+/* Works settle gently into place: where scrolling stops near one, the page glides until it sits
+ * in the middle of the screen below the menu (elements marked data-snap). With a mouse or
+ * trackpad, src/scripts/motion.ts does this along with its smooth scrolling; on touch screens,
+ * the browser does it. Off for reduced motion. */
+@media (pointer: coarse) and (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-snap-type: y proximity;
+  }
+}
+
+[data-snap='start'] {
+  scroll-snap-align: start;
+}
+
+[data-snap='center'] {
+  scroll-snap-align: center;
 }
 
 img,
@@ -67,7 +90,6 @@ h3 {
   font-family: var(--font-display);
   font-weight: 400;
   line-height: 1.1;
-  letter-spacing: -0.005em;
   text-wrap: balance;
 }
 

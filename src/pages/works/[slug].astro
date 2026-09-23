@@ -36,9 +36,11 @@ const full = await getImage({
   fit: 'contain',
 });
 
-// The original is offered only while it is available; prints stay whenever they exist.
+// The original is offered while it is available (or its availability is still to be filled in);
+// prints stay whenever they exist.
 const shopLinks: { label: string; href: string }[] = [];
-if (status === 'available' && etsyUrl) shopLinks.push({ label: 'Original on Etsy', href: etsyUrl });
+const originalOnOffer = status === 'available' || isPlaceholder(status);
+if (originalOnOffer && etsyUrl) shopLinks.push({ label: 'Original on Etsy', href: etsyUrl });
 if (printsUrl) shopLinks.push({ label: 'Prints', href: printsUrl });
 
 const description = `${[title, year].join(', ')}. ${[medium, dimensions].filter(Boolean).join(', ')}.`;
@@ -257,7 +259,6 @@ const socialImage = await socialImageFor(work);
     font-size: clamp(1.75rem, 1.2rem + 2vw, 3.25rem);
     font-style: italic;
     line-height: 1.05;
-    letter-spacing: -0.015em;
   }
 
   .facts {
@@ -304,6 +305,40 @@ const socialImage = await socialImageFor(work);
   .shop :global(.button) {
     min-height: 2.75rem;
     padding: 0.6rem 1.1rem;
+  }
+
+  /* Phones: the shop links side by side, and everything a little closer on short screens, so the
+     work keeps its room on the one screen. */
+  @media (max-width: 47.99em) {
+    .shop {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .shop :global(.button) {
+      width: 100%;
+      padding: 0.5rem 0.75rem;
+    }
+
+    .shop :global(.button.is-placeholder > span + span) {
+      font-size: 0.75rem;
+      line-height: 1.35;
+    }
+  }
+
+  @media (max-width: 47.99em) and (max-height: 50em) {
+    .work-page {
+      row-gap: 0.75rem;
+    }
+
+    .details {
+      gap: 0.625rem;
+    }
+
+    .facts {
+      gap: 0.5rem 1.25rem;
+      padding-block: 0.5rem;
+    }
   }
 
   .pager {

@@ -13,14 +13,13 @@
 :root {
   /* Colour ------------------------------------------------------------------------------ */
   --colour-bg: #0f0d0b;          /* warm near-black: the dark field around every work */
-  --colour-bg-raised: #171411;   /* menu and full-screen viewer panels */
   --colour-text: #ebe5d9;        /* bone: 15.5:1 */
   --colour-text-muted: #a79f92;  /* secondary text and labels: 7.4:1 */
   --colour-accent: #b49a6a;      /* muted brass: focus rings, current page, hover: 7.2:1 */
   --colour-line: #2e2924;        /* hairlines (decorative only) */
 
   /* Typefaces ----------------------------------------------------------------------------- */
-  --font-display: var(--font-display-face); /* serif: name, titles, statement (Cormorant Garamond) */
+  --font-display: var(--font-display-face); /* serif: name, titles, statement (Instrument Serif) */
   --font-ui: var(--font-ui-face);           /* sans: navigation, labels, body text (Instrument Sans) */
 
   /* Type sizes (fluid between small phones and large screens) ------------------------------ */

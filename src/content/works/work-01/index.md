@@ -7,4 +7,6 @@ dimensions: "[PLACEHOLDER: dimensions]"
 featured: true
 order: 1
 status: "[PLACEHOLDER: available, sold or not-for-sale]"
+etsyUrl: "[PLACEHOLDER: Etsy listing URL]"
+printsUrl: "[PLACEHOLDER: prints URL for this work]"
 ---

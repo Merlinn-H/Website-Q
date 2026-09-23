@@ -9,16 +9,11 @@ const links = [
 ];
 ---
 
+{/* Stays at the top of the screen on every page, with every tab one tap away, phones included. */}
 <header class="site-header">
   <a class="brand" href="/" aria-current={path === '/' ? 'page' : undefined}>{site.name}</a>
 
-  {/* On small screens the links sit in a popover opened by this button: it works without JavaScript. */}
-  <button class="menu-open label" type="button" popovertarget="site-menu">Menu</button>
-
-  <nav id="site-menu" class="site-nav" popover aria-label="Main">
-    <button class="menu-close label" type="button" popovertarget="site-menu" popovertargetaction="hide">
-      Close
-    </button>
+  <nav class="site-nav" aria-label="Main">
     <ul role="list">
       {
         links.map(({ href, label }) => (
@@ -35,15 +30,30 @@ const links = [
 
 <style>
   .site-header {
-    position: absolute;
+    position: fixed;
     inset: 0 0 auto;
     z-index: 10;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1.5rem;
+    gap: 1rem;
     height: var(--header-h);
     padding-inline: var(--gutter);
+  }
+
+  /* A soft shade from the top of the screen, so the menu stays readable over the works as the
+     page scrolls beneath it. */
+  .site-header::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 -1.5rem;
+    z-index: -1;
+    background: linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--colour-bg) 92%, transparent) 55%,
+      transparent
+    );
+    pointer-events: none;
   }
 
   .brand {
@@ -59,13 +69,12 @@ const links = [
 
   .site-nav ul {
     display: flex;
-    flex-wrap: wrap;
-    gap: 0.25rem 2.25rem;
+    gap: clamp(1.1rem, 5vw, 2.25rem);
   }
 
   .site-nav a {
     display: inline-block;
-    padding-block: 0.5rem;
+    padding-block: 0.75rem;
     font-size: var(--text-label);
     font-weight: 500;
     letter-spacing: 0.16em;
@@ -78,110 +87,10 @@ const links = [
     color: var(--colour-accent);
   }
 
-  .menu-open,
-  .menu-close {
-    display: none;
-    min-height: 2.75rem;
-    padding: 0.5rem 0;
-    border: 0;
-    background: none;
-    color: var(--colour-text);
-    cursor: pointer;
-  }
-
-  .menu-open:hover,
-  .menu-close:hover {
-    color: var(--colour-accent);
-  }
-
-  /* Wide screens: the navigation is always visible, whatever the popover state. */
-  @media (min-width: 48em) {
-    .site-nav {
-      display: block;
-      position: static;
-      inset: auto;
-      width: auto;
-      height: auto;
-      margin: 0;
-      padding: 0;
-      overflow: visible;
-      border: 0;
-      background: none;
-      color: inherit;
-    }
-  }
-
-  /* Small screens: collapse the links behind the Menu button where popovers are supported.
-     Older browsers ignore this block and show the links in place. */
-  @supports selector(:popover-open) {
-    @media (max-width: 47.99em) {
-      .menu-open {
-        display: inline-block;
-      }
-
-      .site-nav:popover-open {
-        position: fixed;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        max-width: none;
-        max-height: none;
-        margin: 0;
-        padding: var(--header-h) var(--gutter) calc(var(--header-h) * 1.5);
-        border: 0;
-        background: var(--colour-bg-raised);
-        color: var(--colour-text);
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-      }
-
-      .menu-close {
-        display: inline-block;
-        position: absolute;
-        top: calc((var(--header-h) - 2.75rem) / 2);
-        right: var(--gutter);
-      }
-
-      .site-nav ul {
-        flex-direction: column;
-        gap: 1.25rem;
-      }
-
-      .site-nav a {
-        font-family: var(--font-display);
-        font-size: var(--text-title);
-        font-weight: 400;
-        letter-spacing: 0;
-        line-height: 1.1;
-        text-transform: none;
-      }
-    }
-
-    @media (max-width: 47.99em) and (prefers-reduced-motion: no-preference) {
-      .site-nav:popover-open {
-        transition:
-          opacity 0.35s ease,
-          display 0.35s allow-discrete,
-          overlay 0.35s allow-discrete;
-      }
-
-      @starting-style {
-        .site-nav:popover-open {
-          opacity: 0;
-        }
-      }
-    }
-  }
-
-  /* Without popover support on small screens, the links wrap below the name. */
-  @supports not selector(:popover-open) {
-    @media (max-width: 47.99em) {
-      .site-header {
-        flex-wrap: wrap;
-        height: auto;
-        padding-block: 1rem;
-      }
+  /* The narrowest phones: slightly tighter letters, so the three tabs always fit. */
+  @media (max-width: 22.5em) {
+    .site-nav a {
+      letter-spacing: 0.1em;
     }
   }
 </style>
