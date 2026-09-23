@@ -296,9 +296,10 @@ body::after {
 }
 
 /* Page transitions -------------------------------------------------------------------------
- * Pages cross-fade, and the artwork that was clicked grows into its own page with its colour
- * bleed (the names "artwork" and "artwork-bleed" are given to them by src/scripts/motion.ts).
- * Off for reduced motion. */
+ * Pages change without reloading and cross-fade, and the artwork that was clicked grows into its
+ * own page with its colour bleed (the names "artwork" and "artwork-bleed" are given to them by
+ * src/scripts/transitions.ts). Without JavaScript, pages still cross-fade where the browser
+ * supports it (@view-transition). Off for reduced motion. */
 
 @media (prefers-reduced-motion: no-preference) {
   @view-transition {
@@ -331,6 +332,14 @@ body::after {
     width: 100%;
     height: 100%;
     object-fit: fill;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
   }
 }
 

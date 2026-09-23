@@ -24,6 +24,9 @@ export default defineConfig({
     // All CSS is small, so it is inlined into each page: no render-blocking stylesheet request.
     inlineStylesheets: 'always',
   },
+  // Pages change without reloading, and are fetched ahead of time by src/scripts/transitions.ts
+  // (which keeps them for the visit), so Astro's own prefetching is off.
+  prefetch: false,
   image: {
     // Encoder quality for the resized artwork files (0 to 100). Kept high enough to hold
     // painted texture; lower numbers give smaller files.

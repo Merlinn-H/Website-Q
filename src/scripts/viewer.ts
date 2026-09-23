@@ -1,14 +1,22 @@
 // Opens the artwork full screen when its image is clicked or tapped. Click or tap the image to
 // zoom in at that point and again to zoom out; drag with a mouse (or scroll, or swipe) to move
 // around; Escape or Close to leave. The underlying link keeps working without JavaScript.
-const trigger = document.querySelector<HTMLAnchorElement>('[data-viewer-open]');
-const dialog = document.querySelector<HTMLDialogElement>('[data-viewer]');
-const stage = dialog?.querySelector<HTMLElement>('[data-viewer-stage]');
-const zoomButton = dialog?.querySelector<HTMLButtonElement>('[data-viewer-zoom]');
-const closeButton = dialog?.querySelector<HTMLButtonElement>('[data-viewer-close]');
-const pageImage = trigger?.querySelector('img');
 
-if (trigger && dialog && stage && zoomButton && closeButton && pageImage && 'showModal' in dialog) {
+// Set up for each work page as it arrives: pages change without reloading (see transitions.ts).
+const ready = new WeakSet<Element>();
+
+function setUp() {
+  const trigger = document.querySelector<HTMLAnchorElement>('[data-viewer-open]');
+  const dialog = document.querySelector<HTMLDialogElement>('[data-viewer]');
+  const stage = dialog?.querySelector<HTMLElement>('[data-viewer-stage]');
+  const zoomButton = dialog?.querySelector<HTMLButtonElement>('[data-viewer-zoom]');
+  const closeButton = dialog?.querySelector<HTMLButtonElement>('[data-viewer-close]');
+  const pageImage = trigger?.querySelector('img');
+
+  if (!trigger || !dialog || !stage || !zoomButton || !closeButton || !pageImage) return;
+  if (!('showModal' in dialog) || ready.has(dialog)) return;
+  ready.add(dialog);
+
   const fullUrl = trigger.href;
   const fullWidth = Number(trigger.dataset.width);
   const fullHeight = Number(trigger.dataset.height);
@@ -110,3 +118,6 @@ if (trigger && dialog && stage && zoomButton && closeButton && pageImage && 'sho
   stage.addEventListener('pointerup', endDrag);
   stage.addEventListener('pointercancel', endDrag);
 }
+
+setUp();
+document.addEventListener('astro:page-load', setUp);

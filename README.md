@@ -47,7 +47,9 @@ npm run dev
 ```
 
 Then open <http://localhost:4321> in your browser. While this runs, the page updates every time you
-save a file. Press `Ctrl + C` in the terminal to stop it.
+save a file. Press `Ctrl + C` in the terminal to stop it. Pages are prepared on request in this
+mode, so moving between them is slower than online: judge the smoothness with `npm run preview`
+(below) or on the live site.
 
 Before putting changes online, check that everything builds:
 
@@ -304,9 +306,10 @@ its label on computers, above it on phones). A click on the empty background, or
 the same place; the Gallery link in the header does the same without JavaScript. Clicking the work
 itself opens it full screen, where it can be zoomed.
 
-In browsers that support page transitions (such as Chrome and Edge), the work you click grows
-into its own page and back again, its colour bleed travelling with it; elsewhere the page simply
-changes. All movement (smooth
-scrolling, the light and parallax effects, the page transitions) is switched off for visitors
-whose device asks for reduced motion. Browsers that do not support an effect simply show the page
-without it.
+Moving around the site never reloads the page: each page is fetched shortly before it is needed
+(as soon as a link to it has been on screen for a moment) and swapped in while the old one fades
+out. In browsers that support page transitions (such as Chrome and Edge), the work you click grows
+into its own page and back again, its colour bleed travelling with it; other browsers change page
+at once. All movement (smooth scrolling, the light and parallax effects, the page transitions) is
+switched off for visitors whose device asks for reduced motion. Browsers that do not support an
+effect simply show the page without it.
