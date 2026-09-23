@@ -64,8 +64,11 @@ export const getFeatured = (works: Work[]) => works.find((work) => work.data.fea
 
 export const workPath = (work: Work) => `/works/${work.id}/`;
 
-export const statusLabel = {
+const statusLabel: Record<string, string> = {
   available: 'Available',
   sold: 'Sold',
   'not-for-sale': 'Not for sale',
-} as const;
+};
+
+/** What the work page shows for `status`; a placeholder is shown as written. */
+export const availability = (status: string) => statusLabel[status] ?? status;

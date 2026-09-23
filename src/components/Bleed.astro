@@ -1,0 +1,17 @@
+---
+import { getImage } from 'astro:assets';
+import type { Work } from '../lib/works';
+
+interface Props {
+  work: Work;
+}
+
+const { work } = Astro.props;
+
+// A tiny copy of the artwork (a few hundred bytes). CSS stretches its outermost rows and columns
+// of pixels outwards on every side, blurs them and fades them out, so the colours at the edges of
+// the work bleed onto the page. It always sits behind the work, never over it (see global.css).
+const tiny = await getImage({ src: work.image, width: 64, format: 'webp', quality: 80 });
+---
+
+<span class="bleed" aria-hidden="true" style={`border-image-source: url(${tiny.src})`}></span>

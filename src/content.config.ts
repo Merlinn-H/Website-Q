@@ -2,10 +2,13 @@ import { defineCollection } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
 
-// A web address (https://...) or a value still written as [PLACEHOLDER: ...].
+// A value still written as [PLACEHOLDER: ...].
+const placeholder = z.string().regex(/^\[PLACEHOLDER:.*\]$/);
+
+// A web address (https://...) or a placeholder.
 const link = z.union([
   z.httpUrl({ error: 'must be a full web address starting with https://' }),
-  z.string().regex(/^\[PLACEHOLDER:.*\]$/),
+  placeholder,
 ]);
 
 // One folder per work: src/content/works/<folder>/index.md plus exactly one image file.
@@ -19,7 +22,7 @@ const works = defineCollection({
     dimensions: z.string().min(1).optional(),
     featured: z.boolean().default(false),
     order: z.number(),
-    status: z.enum(['available', 'sold', 'not-for-sale']),
+    status: z.union([z.enum(['available', 'sold', 'not-for-sale']), placeholder]),
     etsyUrl: link.optional(),
     printsUrl: link.optional(),
   }),

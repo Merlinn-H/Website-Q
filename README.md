@@ -98,7 +98,7 @@ What each line does:
 | `dimensions` | Optional. Delete the whole line if the work has no physical size. |
 | `featured` | `true` for the one work that opens the gallery full screen, `false` for the others. If several say `true`, the one with the lowest `order` is used. If none does, the first work is used. |
 | `order` | A number. Works appear in the gallery, and in Previous / Next on the work pages, from the lowest number to the highest. |
-| `status` | `available`, `sold` or `not-for-sale`. |
+| `status` | `available`, `sold` or `not-for-sale`. Until you know, it can stay as the placeholder, which the work page then shows as written. |
 | `etsyUrl` | Optional. The Etsy listing of the original. The **Original on Etsy** button only appears while `status` is `available`. |
 | `printsUrl` | Optional. The page where prints of this work can be ordered. The **Prints** button appears whenever this line exists, including when the original is sold. |
 
@@ -113,8 +113,10 @@ second `---` line is ignored.
 
 **To remove a work**, delete its folder.
 
-**The six placeholder works** (`src/content/works/placeholder-2-3/` and the five others) exist only
-to show how different shapes of image behave. Delete those six folders once your own works are in.
+**The works already on the site** are in `src/content/works/work-01/`, `work-02/` and `work-03/`.
+Their title, year, medium, dimensions and availability are still placeholders: open each
+`index.md` and fill them in. You can also rename the folders (the web address follows the folder
+name). `work-01` is the featured work.
 
 ## 4. Changing colours and fonts
 
@@ -133,12 +135,17 @@ Text must stay readable against the background: check any new pair of colours wi
 checker such as the [WebAIM contrast checker](https://webaim.org/resources/contrastchecker/). Aim
 for at least 4.5:1. The current ratios are noted beside each colour in the file.
 
-Two more settings in the same file control the atmosphere:
+More settings in the same file control the atmosphere (`0` turns an effect off):
 
-- `--halo-opacity`: the glow of each work's own colours in the dark around it (`0` turns it off).
-- `--grain-opacity`: the fine film grain on the dark background (`0` turns it off).
+- `--bleed-opacity`: how strongly the colours at the edges of each work run out onto the page.
+- `--bleed-size` and `--bleed-size-vertical`: how far they run sideways, and up and down.
+- `--bleed-blur`: how soft they are.
+- `--wall-light`: the faint light falling from the top of the screen.
+- `--vignette`: the shadow deepening towards the edges of the screen.
+- `--grain-opacity`: the fine, still grain on the background.
 
-Neither ever covers or changes the artwork itself.
+None of them ever covers or changes the artwork itself: the bleed is drawn behind the work, from a
+tiny copy of it made automatically when the site is built.
 
 ### Fonts
 
@@ -184,7 +191,7 @@ are real), so nothing breaks in the meantime.
 | `src/content/about/index.md` | `[PLACEHOLDER: artist statement]` | The statement, below the second `---` line. Separate paragraphs with an empty line. |
 | `src/content/about/index.md` | `[PLACEHOLDER: portrait description, read aloud by screen readers]` | Only needed if you add a portrait (see below). |
 | `src/pages/privacy.astro` | `[PLACEHOLDER: server log retention period under the Vercel plan in use]` | How long Vercel keeps server logs for your plan. |
-| `src/content/works/placeholder-*/index.md` | title, year, medium, dimensions, Etsy and prints addresses | Replace these works with your own (see section 3). |
+| `src/content/works/work-01/`, `work-02/`, `work-03/` (`index.md`) | `[PLACEHOLDER: title]`, `[PLACEHOLDER: year]`, `[PLACEHOLDER: medium]`, `[PLACEHOLDER: dimensions]`, `[PLACEHOLDER: available, sold or not-for-sale]` | The details of each work (see section 3). Add `etsyUrl` and `printsUrl` lines to show the shop buttons. |
 
 **The portrait on the About page** is optional and hidden by default, because the artist is
 anonymous. To show one, put a single image file in `src/content/about/` and describe it in the
@@ -281,13 +288,11 @@ variable named `SITE_URL` with the value `https://www.yourdomain.com`, and redep
 cookies and loads nothing from other companies; every image keeps its own proportions and is never
 cropped; tapping or clicking an artwork opens it full screen, where it can be zoomed.
 
-The gallery opens on the featured work with the name set around it. Each work glows softly with its
-own colours, comes out of the dark as it reaches the middle of the screen, and hangs left or right
-in turn beside its title and number (upright works) or across the full width (wide works). On a
-work page, an upright work hangs beside its label on large screens. In browsers that support page
-transitions (such as Chrome and Edge), the work you click grows into its own page; elsewhere the
-page simply changes. All movement (smooth scrolling, the light effects, the page
-transitions, the moving grain) is switched off for visitors whose device asks for reduced motion.
-Browsers that do not support an effect simply show the page without it.
-#   W e b s i t e - Q  
- 
+The gallery opens on the featured work with the name set around it. The colours at the edges of
+each work bleed out onto the dark wall around it; each work comes out of the dark as it reaches the
+middle of the screen, and hangs left or right in turn beside its title and number (upright works)
+or across the full width (wide works). On a work page, an upright work hangs beside its label on
+large screens. In browsers that support page transitions (such as Chrome and Edge), the work you
+click grows into its own page; elsewhere the page simply changes. All movement (smooth scrolling,
+the light effects, the page transitions) is switched off for visitors whose device asks for
+reduced motion. Browsers that do not support an effect simply show the page without it.

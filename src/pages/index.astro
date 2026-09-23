@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ArtworkPicture from '../components/ArtworkPicture.astro';
-import Halo from '../components/Halo.astro';
+import Bleed from '../components/Bleed.astro';
 import { site } from '../site.config';
 import { getFeatured, getWorks, workPath } from '../lib/works';
 import { socialImageFor } from '../lib/social';
@@ -47,7 +47,7 @@ const letters = Math.max(...nameParts.map((part) => part.text.length));
     {
       featured && (
         <a class="hero-work" href={workPath(featured)} data-artwork-link>
-          <Halo work={featured} />
+          <Bleed work={featured} />
           <ArtworkPicture
             work={featured}
             priority
@@ -71,7 +71,7 @@ const letters = Math.max(...nameParts.map((part) => part.text.length));
           >
             <figure style={`--ratio: ${ratio(work.ratio)}`}>
               <a class="work-link" href={workPath(work)} data-artwork-link>
-                <Halo work={work} />
+                <Bleed work={work} />
                 <ArtworkPicture
                   work={work}
                   sizes={
@@ -81,7 +81,7 @@ const letters = Math.max(...nameParts.map((part) => part.text.length));
                   }
                 />
               </a>
-              <figcaption class="on-glow">
+              <figcaption class="on-bleed">
                 <span class="work-numeral" aria-hidden="true">
                   {work.numeral}
                 </span>
@@ -231,7 +231,7 @@ const letters = Math.max(...nameParts.map((part) => part.text.length));
       animation: lights-up 2.4s var(--ease-out) both;
     }
 
-    .hero-work :global(.halo) {
+    .hero-work :global(.bleed) {
       animation: glow-up 3.2s var(--ease-out) both;
     }
 
@@ -298,8 +298,8 @@ const letters = Math.max(...nameParts.map((part) => part.text.length));
     object-fit: contain;
   }
 
-  .work-link:hover :global(.halo) {
-    opacity: calc(var(--halo-opacity) * 1.6);
+  .work-link:hover :global(.bleed) {
+    opacity: min(1, var(--bleed-opacity) * 1.2);
   }
 
   figcaption {

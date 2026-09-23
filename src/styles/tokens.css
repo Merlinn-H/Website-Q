@@ -39,9 +39,14 @@
   --measure: 38rem;                     /* comfortable line length for reading */
   --page-max: 96rem;                    /* widest text layout on very large screens */
 
-  /* Atmosphere ----------------------------------------------------------------------------- */
-  --halo-opacity: 0.45;  /* glow of each work's own colours behind it: 0 turns it off */
-  --grain-opacity: 0.35; /* film grain on the dark background: 0 turns it off */
+  /* Atmosphere (0 turns an effect off) ----------------------------------------------------- */
+  --bleed-opacity: 0.75;                          /* colours at the edges of each work running onto the page */
+  --bleed-size: clamp(4rem, 14vw, 16rem);         /* how far they run sideways */
+  --bleed-size-vertical: clamp(5rem, 18vh, 17rem); /* how far they run up and down */
+  --bleed-blur: clamp(12px, 1.8vw, 28px);         /* how soft they are */
+  --wall-light: 0.05;                             /* faint light falling from the top of the screen */
+  --vignette: 0.6;                                /* shadow deepening towards the edges of the screen */
+  --grain-opacity: 0.16;                          /* fine, still grain on the background */
 
   /* Motion (switched off when the visitor asks for reduced motion) ------------------------- */
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);

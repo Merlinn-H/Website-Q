@@ -2,9 +2,9 @@
 import { getImage } from 'astro:assets';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ArtworkPicture from '../../components/ArtworkPicture.astro';
-import Halo from '../../components/Halo.astro';
+import Bleed from '../../components/Bleed.astro';
 import Viewer from '../../components/Viewer.astro';
-import { getWorks, statusLabel, workPath, type Work } from '../../lib/works';
+import { availability, getWorks, workPath, type Work } from '../../lib/works';
 import { socialImageFor } from '../../lib/social';
 import { isPlaceholder } from '../../lib/placeholder';
 
@@ -56,7 +56,7 @@ const socialImage = await socialImageFor(work);
         data-width={full.attributes.width}
         data-height={full.attributes.height}
       >
-        <Halo work={work} />
+        <Bleed work={work} />
         <ArtworkPicture
           work={work}
           priority
@@ -68,7 +68,7 @@ const socialImage = await socialImageFor(work);
       </a>
     </div>
 
-    <div class="details on-glow" data-reveal>
+    <div class="details on-bleed" data-reveal>
       <div class="details-head">
         <p class="numeral" aria-hidden="true">{work.numeral}</p>
         <h1 class="title">{title}</h1>
@@ -94,7 +94,7 @@ const socialImage = await socialImageFor(work);
           }
           <div>
             <dt class="label">Availability</dt>
-            <dd class:list={[{ 'is-sold': status === 'sold' }]}>{statusLabel[status]}</dd>
+            <dd class:list={[{ 'is-sold': status === 'sold' }]}>{availability(status)}</dd>
           </div>
         </dl>
 
@@ -180,8 +180,8 @@ const socialImage = await socialImageFor(work);
     object-fit: contain;
   }
 
-  .stage-work:hover :global(.halo) {
-    opacity: calc(var(--halo-opacity) * 1.6);
+  .stage-work:hover :global(.bleed) {
+    opacity: min(1, var(--bleed-opacity) * 1.2);
   }
 
   .details {

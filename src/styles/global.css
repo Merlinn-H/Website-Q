@@ -206,69 +206,68 @@ a.button:hover {
 }
 
 /* Atmosphere --------------------------------------------------------------------------------
- * Film grain on the dark field. It sits behind all page content, so it never covers a work. */
+ * The dark field is a softly lit wall: a faint light from above, deeper shadow towards the edges
+ * of the screen, and a fine, still grain that also keeps the dark gradients free of banding.
+ * All of it sits behind the page content, so it never covers a work. Strengths are set in
+ * tokens.css. */
 
-body::before {
+body::before,
+body::after {
   content: '';
   position: fixed;
-  inset: -10%;
+  inset: 0;
   z-index: -1;
   pointer-events: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.92 0 0 0 0 0.9 0 0 0 0 0.85 0.9 0 0 0 -0.42'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+}
+
+body::before {
+  background:
+    radial-gradient(120% 70% at 50% 0%, rgb(235 229 217 / var(--wall-light)), transparent 62%),
+    radial-gradient(150% 110% at 50% 40%, transparent 45%, rgb(0 0 0 / var(--vignette)) 100%);
+}
+
+body::after {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.92 0 0 0 0 0.9 0 0 0 0 0.85 0.8 0 0 0 -0.3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
   opacity: var(--grain-opacity);
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  body::before {
-    animation: grain 1s steps(6) infinite;
-  }
-}
+/* Bleed: the colours at the edges of a work run out onto the page (see Bleed.astro). The
+ * outermost pixels of a tiny copy of the work are stretched outwards on every side
+ * (border-image slice 1), then blurred and faded, so each edge trails its own colours. The
+ * parent must be position: relative and isolation: isolate, so the bleed stays behind the work. */
+.bleed {
+  --reach-x: var(--bleed-size);
+  --reach-y: var(--bleed-size-vertical);
+  --fade-x: transparent, rgb(0 0 0 / 0.08) calc(var(--reach-x) * 0.3),
+    rgb(0 0 0 / 0.4) calc(var(--reach-x) * 0.65), #000 var(--reach-x),
+    #000 calc(100% - var(--reach-x)), rgb(0 0 0 / 0.4) calc(100% - var(--reach-x) * 0.65),
+    rgb(0 0 0 / 0.08) calc(100% - var(--reach-x) * 0.3), transparent;
+  --fade-y: transparent, rgb(0 0 0 / 0.08) calc(var(--reach-y) * 0.3),
+    rgb(0 0 0 / 0.4) calc(var(--reach-y) * 0.65), #000 var(--reach-y),
+    #000 calc(100% - var(--reach-y)), rgb(0 0 0 / 0.4) calc(100% - var(--reach-y) * 0.65),
+    rgb(0 0 0 / 0.08) calc(100% - var(--reach-y) * 0.3), transparent;
 
-@keyframes grain {
-  0%,
-  100% {
-    transform: translate(0, 0);
-  }
-
-  17% {
-    transform: translate(-3%, 2%);
-  }
-
-  33% {
-    transform: translate(2%, -3%);
-  }
-
-  50% {
-    transform: translate(-2%, -2%);
-  }
-
-  67% {
-    transform: translate(3%, 3%);
-  }
-
-  83% {
-    transform: translate(-1%, 3%);
-  }
-}
-
-/* Halo: a tiny copy of a work blurred into light of its own colours (see Halo.astro). Its parent
- * must be position: relative and isolation: isolate, so the halo stays behind the work. */
-.halo {
   position: absolute;
-  inset: -12%;
+  inset: calc(-1 * var(--reach-y)) calc(-1 * var(--reach-x));
   z-index: -1;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: 100% 100%;
-  filter: blur(clamp(36px, 6vw, 96px)) saturate(1.3) brightness(0.8);
-  opacity: var(--halo-opacity);
+  border: 0 solid transparent;
+  border-image-slice: 1 fill;
+  border-image-width: var(--reach-y) var(--reach-x);
+  border-image-repeat: stretch;
+  /* Slightly dimmed, so a pale edge glows rather than glares. */
+  filter: blur(var(--bleed-blur)) saturate(1.15) brightness(0.9);
+  opacity: var(--bleed-opacity);
   pointer-events: none;
+  -webkit-mask-image: linear-gradient(to right, var(--fade-x)), linear-gradient(to bottom, var(--fade-y));
+  mask-image: linear-gradient(to right, var(--fade-x)), linear-gradient(to bottom, var(--fade-y));
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
   transition: opacity 0.8s var(--ease-out);
 }
 
-/* Text that may sit in a work's glow gets a soft dark backing, so it stays readable even
+/* Text that may sit in a work's bleed gets a soft dark backing, so it stays readable even
  * beside a very pale work. */
-.on-glow {
+.on-bleed {
   text-shadow:
     0 0 0.4em var(--colour-bg),
     0 0 1.2em var(--colour-bg),
