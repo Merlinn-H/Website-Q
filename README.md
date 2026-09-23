@@ -140,7 +140,8 @@ More settings in the same file control the atmosphere (`0` turns an effect off):
 - `--bleed-opacity`: how strongly the colours at the edges of each work run out onto the page.
 - `--bleed-size` and `--bleed-size-vertical`: how far they run sideways, and up and down.
 - `--bleed-blur`: how soft they are.
-- `--frame-gap`: the space between each work and the fine frame drawn on the wall around it.
+- `--frame-gap`: the space between each work and the fine frame drawn on the wall around it (in
+  the gallery only; work pages show the work unframed).
 - `--frame-line`: the colour of that frame (`transparent` hides it).
 - `--parallax`: how far a work glides against its frame as the page scrolls.
 - `--wall-light`: the faint light falling from the top of the screen.
@@ -297,9 +298,9 @@ page scrolls, each work comes out of the dark as it reaches the middle of the sc
 little faster than its frame, as if hanging in front of the wall. Upright works hang left or right
 in turn beside their title and number; wide works take the full width.
 
-A work page shows everything on one screen: the work in its frame, its number, title, details,
-shop buttons and the links to the previous and next works (the work beside its label on computers,
-above it on phones). A click on the empty background, or the Escape key, returns to the gallery at
+A work page shows everything on one screen: the work itself (without its gallery frame), its
+number, title, details, shop buttons and the links to the previous and next works (the work beside
+its label on computers, above it on phones). A click on the empty background, or the Escape key, returns to the gallery at
 the same place; the Gallery link in the header does the same without JavaScript. Clicking the work
 itself opens it full screen, where it can be zoomed.
 

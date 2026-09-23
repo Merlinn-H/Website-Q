@@ -50,7 +50,6 @@ const socialImage = await socialImageFor(work);
     <div class="stage">
       <div class="stage-plate plate" style={`--ratio: ${ratio}`}>
         <Bleed work={work} />
-        <span class="frame" aria-hidden="true" />
         <a
           class="stage-work"
           href={full.src}
@@ -161,7 +160,7 @@ const socialImage = await socialImageFor(work);
 
 <style>
   /* ---------------------------------------------------------------------------------------
-     Everything about the work on one screen: the work in its frame, as large as the space
+     Everything about the work on one screen: the work itself (unframed), as large as the space
      allows, with its label (number, title, details, shop links) and the way to the previous and
      next works. Beside the label on wide screens, above it on phones and tall screens. The
      work's box is worked out from the space left for it, so it never moves while loading.
@@ -196,12 +195,12 @@ const socialImage = await socialImageFor(work);
   }
 
   .stage-plate {
-    width: min(100cqw - 2 * var(--frame-gap), (100cqh - 2 * var(--frame-gap)) * var(--ratio));
+    width: min(100cqw, 100cqh * var(--ratio));
   }
 
   @supports not (width: 1cqh) {
     .stage-plate {
-      width: min(100% - 2 * var(--frame-gap), 55vh * var(--ratio));
+      width: min(100%, 55vh * var(--ratio));
     }
   }
 
