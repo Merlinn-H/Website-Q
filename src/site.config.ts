@@ -6,7 +6,7 @@
  */
 export const site = {
   /** The artist name: header, gallery opening, footer and page titles. */
-  name: 'Q',
+  name: 'Kenning',
 
   /** One sentence shown by search engines and link previews. */
   description: '[PLACEHOLDER: one-sentence site description for search engines]',
