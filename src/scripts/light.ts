@@ -1,24 +1,12 @@
 // Room light (see .room-light in global.css): the wall takes the colour of the work in view. Each
 // work's colour is read once from the tiny copy made for its colour bleed (data-light on .bleed).
-// In the gallery the light follows the work crossing the middle of the screen; on a work's page it
-// sits behind the work; on pages without works it fades out.
+// In the gallery the light follows the work crossing the middle of the screen; on a page with a
+// single work (a work's page, About) it sits behind that work; on pages without works it fades out.
+// The work in view also sets the folio in the menu.
+
+import { lightColour } from '../lib/light-colour';
 
 const colours = new Map<string, Promise<string | null>>();
-
-// Hue and saturation of an RGB colour, brought to a middle lightness so that every work lights the
-// room about as much. A work with hardly any colour gives a neutral, warm light.
-function toLight(r: number, g: number, b: number) {
-  const [red, green, blue] = [r / 255, g / 255, b / 255];
-  const max = Math.max(red, green, blue);
-  const min = Math.min(red, green, blue);
-  const spread = max - min;
-  if (spread < 0.02) return 'hsl(40 25% 60%)';
-  const saturation = spread / (1 - Math.abs(max + min - 1));
-  const sector =
-    max === red ? ((green - blue) / spread + 6) % 6 : max === green ? (blue - red) / spread + 2 : (red - green) / spread + 4;
-  const hue = Math.round(sector * 60);
-  return `hsl(${hue} ${Math.round(Math.min(Math.max(saturation, 0.35), 0.85) * 100)}% 55%)`;
-}
 
 // The pixels of the tiny copy, read straight from the PNG file (8-bit RGB or RGBA, as Astro makes
 // it). Unlike drawing it on a canvas, this never holds up the page: the browser inflates the data
@@ -69,28 +57,14 @@ async function pixelsOf(src: string) {
   return { pixels, channels };
 }
 
-// The colour that gives the work its character: an average weighted towards the most colourful
-// parts (a plain average tends to grey).
+// The colour that gives the work its character (see src/lib/light-colour.ts).
 function colourOf(src: string) {
   let colour = colours.get(src);
   if (!colour) {
     colour = pixelsOf(src)
       .then((image) => {
-        if (!image) return null;
-        const { pixels, channels } = image;
-        let r = 0;
-        let g = 0;
-        let b = 0;
-        let total = 0;
-        for (let i = 0; i < pixels.length; i += channels) {
-          const chroma = (Math.max(pixels[i], pixels[i + 1], pixels[i + 2]) - Math.min(pixels[i], pixels[i + 1], pixels[i + 2])) / 255;
-          const weight = 0.05 + chroma * chroma;
-          r += pixels[i] * weight;
-          g += pixels[i + 1] * weight;
-          b += pixels[i + 2] * weight;
-          total += weight;
-        }
-        return total ? toLight(r / total, g / total, b / total) : null;
+        const light = image && lightColour(image.pixels, image.channels);
+        return light ? `hsl(${light[0]} ${light[1]}% ${light[2]}%)` : null;
       })
       .catch(() => null);
     colours.set(src, colour);
@@ -119,11 +93,24 @@ async function lightFrom(bleed: HTMLElement) {
   if (colour) light.style.setProperty('--light', colour);
 }
 
+// The folio in the menu: "II / III" for the work in view in the gallery's sequence, hidden on the
+// opening screen and on other pages.
+function showFolio(bleed?: HTMLElement) {
+  const folio = document.querySelector<HTMLElement>('[data-folio]');
+  if (!folio) return;
+  const numerals = document.querySelectorAll('.work-numeral');
+  const numeral = bleed?.closest('.work')?.querySelector('.work-numeral')?.textContent?.trim();
+  const total = numerals[numerals.length - 1]?.textContent?.trim();
+  if (numeral && total) folio.textContent = `${numeral} / ${total}`;
+  folio.classList.toggle('is-shown', !!(numeral && total));
+}
+
 let observer: IntersectionObserver | undefined;
 
 function watch() {
   observer?.disconnect();
   current = undefined;
+  showFolio();
   const bleeds = [...document.querySelectorAll<HTMLElement>('.bleed[data-light]')];
 
   // No works on this page: the light fades out.
@@ -132,21 +119,22 @@ function watch() {
     return;
   }
 
-  // A work's page: the light sits behind the work.
+  // A page with a single work (a work's page, About): the light comes from it straight away.
   if (bleeds.length === 1) {
     current = bleeds[0];
     lightFrom(current);
-    return;
   }
 
-  // The gallery: the work crossing the middle of the screen lights the room.
+  // As the page scrolls, the work crossing the middle of the screen lights the room, the light
+  // settling behind it.
   observer = new IntersectionObserver(
     (entries) => {
       for (const entry of entries) {
         const bleed = entry.isIntersecting && entry.target.querySelector<HTMLElement>(':scope > .bleed');
-        if (bleed && bleed !== current) {
+        if (bleed) {
           current = bleed;
           lightFrom(bleed);
+          showFolio(bleed);
         }
       }
     },

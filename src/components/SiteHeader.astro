@@ -11,7 +11,11 @@ const links = [
 
 {/* Stays at the top of the screen on every page, with every tab one tap away, phones included. */}
 <header class="site-header on-bleed">
-  <a class="brand" href="/" aria-current={path === '/' ? 'page' : undefined}>{site.name}</a>
+  <div class="brand-line">
+    <a class="brand" href="/" aria-current={path === '/' ? 'page' : undefined}>{site.name}</a>
+    {/* In the gallery, the number of the work in view, like a catalogue folio (src/scripts/light.ts). */}
+    <span class="folio" aria-hidden="true" data-folio></span>
+  </div>
 
   <nav class="site-nav" aria-label="Main">
     <ul role="list">
@@ -74,6 +78,35 @@ const links = [
   @keyframes shade-in {
     to {
       opacity: 1;
+    }
+  }
+
+  .brand-line {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    min-width: 0;
+  }
+
+  .folio {
+    font-family: var(--font-display);
+    font-size: 1.125rem;
+    font-style: italic;
+    line-height: 1;
+    white-space: nowrap;
+    color: var(--colour-accent);
+    opacity: 0;
+    transition: opacity 0.6s ease;
+  }
+
+  .folio.is-shown {
+    opacity: 1;
+  }
+
+  /* Narrow phones keep the room for the tabs. */
+  @media (max-width: 26em) {
+    .folio {
+      display: none;
     }
   }
 

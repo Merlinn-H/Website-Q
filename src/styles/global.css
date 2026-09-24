@@ -235,7 +235,8 @@ a.button:hover {
 
 /* Atmosphere --------------------------------------------------------------------------------
  * The dark field is a softly lit wall: a faint light from above, deeper shadow towards the edges
- * of the screen, and a fine, still grain that also keeps the dark gradients free of banding.
+ * of the screen, and a fine grain (drifting slowly, see below) that also keeps the dark gradients
+ * free of banding.
  * All of it sits behind the page content, so it never covers a work. Strengths are set in
  * tokens.css. */
 
@@ -257,6 +258,45 @@ body::before {
 body::after {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.92 0 0 0 0 0.9 0 0 0 0 0.85 0.8 0 0 0 -0.3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
   opacity: var(--grain-opacity);
+}
+
+/* The grain lives, very slowly, like film: it shifts to a new place a few times a second (moved,
+ * never redrawn, so it costs nothing). Still for reduced motion. */
+@media (prefers-reduced-motion: no-preference) {
+  body::after {
+    inset: -10%;
+    animation: grain 2.8s steps(1, end) infinite;
+  }
+}
+
+@keyframes grain {
+  0% {
+    transform: translate(0, 0);
+  }
+
+  14% {
+    transform: translate(-4%, 3%);
+  }
+
+  28% {
+    transform: translate(3%, -5%);
+  }
+
+  42% {
+    transform: translate(-6%, -2%);
+  }
+
+  57% {
+    transform: translate(5%, 4%);
+  }
+
+  71% {
+    transform: translate(-2%, 6%);
+  }
+
+  85% {
+    transform: translate(6%, -3%);
+  }
 }
 
 /* Room light: the wall takes the colour of the work in view, as if the room were lit by its
@@ -327,6 +367,17 @@ body::after {
   display: block;
 }
 
+/* A work's image fades in once it has arrived, over the blurred colours of its bleed (the ones
+ * still loading are marked by src/scripts/arrival.ts, and hidden at once). */
+.plate img {
+  transition: opacity 0.9s var(--ease-out);
+}
+
+.plate img.is-arriving {
+  opacity: 0;
+  transition: none;
+}
+
 /* Bleed: the colours at the edges of a work run out onto the wall (see Bleed.astro). The
  * outermost pixels of a tiny copy of the work are stretched outwards on every side
  * (border-image slice 1), then blurred and faded, so each edge washes the wall in its colours. */
@@ -385,6 +436,18 @@ body::after {
     animation-duration: 0.55s;
   }
 
+  /* While a work travels to or from its page, the rest dims like house lights, then comes back
+   * up (transition type "artwork", added by src/scripts/transitions.ts). */
+  html:active-view-transition-type(artwork)::view-transition-old(root) {
+    animation-name: house-lights-down;
+    animation-duration: 0.8s;
+  }
+
+  html:active-view-transition-type(artwork)::view-transition-new(root) {
+    animation-name: house-lights-up;
+    animation-duration: 0.8s;
+  }
+
   /* The work and its colour bleed move together: same duration, same curve. The work is kept
    * whole inside its moving box, so it cannot spill out of it when it turns into a work of other
    * proportions (previous/next); the bleed, only soft colour, is stretched to its box. */
@@ -414,6 +477,20 @@ body::after {
   ::view-transition-old(*),
   ::view-transition-new(*) {
     animation: none !important;
+  }
+}
+
+@keyframes house-lights-down {
+  to {
+    opacity: 0;
+    filter: brightness(0.35);
+  }
+}
+
+@keyframes house-lights-up {
+  from {
+    opacity: 0;
+    filter: brightness(0.35);
   }
 }
 

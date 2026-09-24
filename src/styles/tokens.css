@@ -48,7 +48,7 @@
   --parallax: 1.4;                                /* how far a work glides as the page scrolls, in frame gaps */
   --wall-light: 0.05;                             /* faint light falling from the top of the screen */
   --vignette: 0.6;                                /* shadow deepening towards the edges of the screen */
-  --grain-opacity: 0.16;                          /* fine, still grain on the background */
+  --grain-opacity: 0.16;                          /* fine grain on the background, drifting slowly like film */
   --room-light: 0.24;                             /* how strongly the room takes the colour of the work in view */
 
   /* Motion (switched off when the visitor asks for reduced motion) ------------------------- */

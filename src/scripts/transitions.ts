@@ -3,9 +3,10 @@
 // - pages are fetched shortly before they are needed (a link on screen for a moment, pointed at,
 //   focused or touched) and kept for the visit, so a change of page starts at once;
 // - the work that was clicked grows into its own page, its colour bleed travelling with it, and
-//   glides back into place on the way back. Only that work and its bleed carry the shared names
-//   "artwork" and "artwork-bleed" (a work page gives them to its own in CSS), and only when both
-//   pages show the work, so each name is used once;
+//   glides back into place on the way back, while the rest of the page dims like house lights.
+//   Only that work and its bleed carry the shared names "artwork" and "artwork-bleed" (a work page
+//   gives them to its own in CSS), and only when both pages show the work, so each name is used
+//   once;
 // - the next page's main image is loaded before the change where possible, so it is there from
 //   the start. When the same work is already on screen, its image stands in meanwhile.
 
@@ -218,10 +219,11 @@ document.addEventListener('astro:before-preparation', (event) => {
     const stage = document.querySelector<HTMLElement>(STAGE);
     const nextStage = next.querySelector(STAGE);
 
-    // The work that goes on: on a work page, its work, if the next page shows works; in the
-    // gallery, the work leading to the next page.
+    // The work that goes on: on a work page, its work, if the next page is another work page or
+    // shows this same work; elsewhere, the work leading to the next page.
     if (!covered()) {
-      if (stage) leaving = next.querySelector(`${STAGE}, ${GALLERY_LINK}`) ? stage : undefined;
+      const shownNext = next.querySelector(`${STAGE}, ${GALLERY_LINK}[href="${fromPath}"]`);
+      if (stage) leaving = shownNext ? stage : undefined;
       else if (nextStage) leaving = galleryLinkTo(event.to.pathname, event.sourceElement?.closest(GALLERY_LINK));
     }
     if (leaving && !stage) nameWork(leaving);
@@ -254,13 +256,9 @@ document.addEventListener('astro:after-swap', () => {
   }
 
   if (arriving) {
-    // It lands already lit: the gallery's opening fade-in is meant for a first visit.
-    for (const el of [arriving, bleedOf(arriving)]) {
-      for (const animation of el?.getAnimations({ subtree: true }) ?? []) {
-        if (animation.timeline === document.timeline) animation.finish();
-      }
-    }
     if (continuing) standIn(arriving.querySelector('img'), placeholder);
+    // While a work travels, the rest of the page dims like house lights (see global.css).
+    viewTransition?.types?.add('artwork');
   }
 
   loading = [];

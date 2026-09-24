@@ -6,10 +6,9 @@ import { isPlaceholder } from '../lib/placeholder';
 const { email, etsyShopUrl, printsUrl } = site.contact;
 
 // Values still marked [PLACEHOLDER: ...] are shown as text instead of broken links.
-const channels = [
-  { label: 'Email', value: email, href: `mailto:${email}`, text: email, external: false },
-  { label: 'Original works', value: etsyShopUrl, href: etsyShopUrl, text: 'Etsy shop', external: true },
-  { label: 'Prints', value: printsUrl, href: printsUrl, text: 'Print shop', external: true },
+const places = [
+  { label: 'Original works', href: etsyShopUrl, text: 'Etsy shop' },
+  { label: 'Prints', href: printsUrl, text: 'Print shop' },
 ];
 ---
 
@@ -19,61 +18,118 @@ const channels = [
 >
   <div class="contact">
     <h1 class="label">Contact</h1>
-    <dl>
+    <p class="email" style={`--chars: ${email.length}`}>
+      {isPlaceholder(email) ? <span>{email}</span> : <a href={`mailto:${email}`}>{email}</a>}
+    </p>
+    <ul class="places" role="list">
       {
-        channels.map(({ label, value, href, text, external }) => (
-          <div>
-            <dt class="label">{label}</dt>
-            <dd>
-              {isPlaceholder(value) ? (
-                <span>{value}</span>
-              ) : (
-                <a href={href}>
-                  {text}
-                  {external && (
-                    <svg width="14" height="14" viewBox="0 0 10 10" aria-hidden="true">
-                      <path d="M2 8 8 2M3.5 2H8v4.5" fill="none" stroke="currentColor" stroke-width="0.9" />
-                    </svg>
-                  )}
-                </a>
-              )}
-            </dd>
-          </div>
-        ))
+        places.map(({ label, href, text }) =>
+          isPlaceholder(href) ? (
+            <li class="place">
+              <span class="label">{label}</span>
+              <span class="place-name">{href}</span>
+            </li>
+          ) : (
+            <li>
+              <a class="place" href={href}>
+                <span class="label">{label}</span>
+                <span class="place-name">{text}</span>
+                <svg width="14" height="14" viewBox="0 0 10 10" aria-hidden="true">
+                  <path d="M2 8 8 2M3.5 2H8v4.5" fill="none" stroke="currentColor" stroke-width="0.9" />
+                </svg>
+              </a>
+            </li>
+          ),
+        )
       }
-    </dl>
+    </ul>
   </div>
 </BaseLayout>
 
 <style>
+  /* The address set large, like the name on the gallery, and the shops below it as quiet ruled
+     lines, as in the back pages of a catalogue. */
   .contact {
-    max-width: var(--page-max);
+    max-width: 60rem;
     margin-inline: auto;
-    padding: calc(var(--page-top) + clamp(2rem, 10vh, 7rem)) var(--gutter) 0;
+    padding: calc(var(--page-top) + clamp(2rem, 14vh, 9rem)) var(--gutter) 0;
   }
 
-  dl {
-    display: grid;
-    gap: clamp(2rem, 6vh, 3.5rem);
-    margin-top: 2.5rem;
-  }
-
-  dd {
-    margin-top: 0.5rem;
+  /* As large as the screen allows, the whole address on one line where it fits. */
+  .email {
+    margin-top: clamp(1.25rem, 4vh, 2rem);
     font-family: var(--font-display);
-    font-size: var(--text-lead);
-    line-height: 1.3;
+    font-size: clamp(1.5rem, min(1rem + 4.5vw, (min(100vw, 60rem) - 2 * var(--gutter)) / (var(--chars) * 0.48)), 5rem);
+    font-style: italic;
+    line-height: 1.1;
     overflow-wrap: anywhere;
   }
 
-  dd a {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4em;
+  .email a {
     text-decoration-color: var(--colour-line);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.18em;
   }
 
-  dd a:hover {
+  .email a:hover {
     text-decoration-color: currentColor;
+  }
+
+  .places {
+    margin-top: clamp(3rem, 10vh, 6rem);
+    border-top: 1px solid var(--colour-line);
+  }
+
+  .places li {
+    border-bottom: 1px solid var(--colour-line);
+  }
+
+  .place {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: baseline;
+    gap: 0.35rem 1.5rem;
+    padding-block: clamp(1.1rem, 3vh, 1.6rem);
+    text-decoration: none;
+  }
+
+  .place .label {
+    grid-column: 1 / -1;
+  }
+
+  .place-name {
+    font-family: var(--font-display);
+    font-size: var(--text-lead);
+    font-style: italic;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+  }
+
+  li.place .place-name {
+    color: var(--colour-text-muted);
+  }
+
+  .place svg {
+    align-self: center;
+    transition: translate 0.4s var(--ease-out);
+  }
+
+  a.place:hover svg {
+    translate: 0.2rem -0.2rem;
+  }
+
+  /* On wider screens each line reads across: what it is on the left, where on the right. */
+  @media (min-width: 40em) {
+    .place {
+      grid-template-columns: minmax(0, 1fr) auto auto;
+    }
+
+    .place .label {
+      grid-column: auto;
+    }
+
+    .place-name {
+      text-align: right;
+    }
   }
 </style>

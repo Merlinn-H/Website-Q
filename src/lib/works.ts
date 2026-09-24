@@ -9,6 +9,8 @@ const images = import.meta.glob<{ default: ImageMetadata }>(
 
 export type Work = CollectionEntry<'works'> & {
   image: ImageMetadata;
+  /** The image file, from the project folder (/src/content/works/<folder>/<file>). */
+  imagePath: string;
   /** Width divided by height of the artwork image. */
   ratio: number;
   /** Wide works get the full width; upright and square ones hang beside their label. */
@@ -49,7 +51,7 @@ export async function getWorks(): Promise<Work[]> {
         );
       }
       const image = images[found[0]].default;
-      return { ...entry, image, ratio: image.width / image.height };
+      return { ...entry, image, imagePath: found[0], ratio: image.width / image.height };
     })
     .sort((a, b) => a.data.order - b.data.order || a.id.localeCompare(b.id))
     .map((work, index) => ({

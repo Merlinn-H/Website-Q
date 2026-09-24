@@ -43,6 +43,23 @@ const socialImageUrl = socialImage && new URL(socialImage.src, Astro.site).href;
     <meta name="description" content={description} />
     {noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={canonical} />}
 
+    {/* The gallery's staged opening (see index.astro) is for a first look at it only. Nothing is
+        stored to know that: a reload, a return through the browser's history, a link to a work
+        further down or a visit from another page of the site shows the gallery at rest. The mark
+        goes with the first change of page (the router replaces it) or once the opening has played
+        (src/scripts/opening.ts). */}
+    <script is:inline>
+      if (
+        location.pathname === '/' &&
+        !location.hash &&
+        performance.getEntriesByType('navigation')[0]?.type === 'navigate' &&
+        !document.referrer.startsWith(location.origin + '/') &&
+        matchMedia('(prefers-reduced-motion: no-preference)').matches
+      ) {
+        document.documentElement.dataset.opening = '';
+      }
+    </script>
+
     {/* Pages change without reloading: the next page is fetched and swapped in (see
         src/scripts/transitions.ts). Browsers without page transitions simply swap. */}
     <ClientRouter fallback="swap" />
@@ -92,6 +109,8 @@ const socialImageUrl = socialImage && new URL(socialImage.src, Astro.site).href;
       import '../scripts/motion';
       import '../scripts/transitions';
       import '../scripts/backdrop';
+      import '../scripts/arrival';
+      import '../scripts/opening';
     </script>
   </body>
 </html>

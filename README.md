@@ -145,7 +145,7 @@ More settings in the same file control the atmosphere (`0` turns an effect off):
 - `--parallax`: how far a work glides as the page scrolls.
 - `--wall-light`: the faint light falling from the top of the screen.
 - `--vignette`: the shadow deepening towards the edges of the screen.
-- `--grain-opacity`: the fine, still grain on the background.
+- `--grain-opacity`: the fine grain on the background, which drifts very slowly, like film.
 - `--room-light`: how strongly the room takes on the colour of the work in view.
 
 None of them ever covers or changes the artwork itself: the bleed is drawn behind the work, from a
@@ -171,10 +171,10 @@ To use a different font:
 
 ### The artist name
 
-The name shown in the header, on the gallery and in the footer is set in **`src/site.config.ts`**
-(`name: 'Q'`). On the gallery's opening screen, a one-word name sits large at the bottom right of
-the featured work; with two or more words, the first sits at the top left and the rest at the
-bottom right.
+The name shown in the header, on the gallery, on the About page, in the footer and on the link
+previews is set in **`src/site.config.ts`** (`name: 'Q'`). On the gallery's opening screen, a
+one-word name sits large at the bottom right of the featured work; with two or more words, the
+first sits at the top left and the rest at the bottom right.
 
 ## 5. Filling in the placeholders
 
@@ -198,9 +198,11 @@ are real), so nothing breaks in the meantime.
 | `src/content/works/work-01/`, `work-02/`, `work-03/` (`index.md`) | `[PLACEHOLDER: title]`, `[PLACEHOLDER: year]`, `[PLACEHOLDER: medium]`, `[PLACEHOLDER: dimensions]`, `[PLACEHOLDER: available, sold or not-for-sale]` | The details of each work (see section 3). |
 | `src/content/works/work-01/`, `work-02/`, `work-03/` (`index.md`) | `[PLACEHOLDER: Etsy listing URL]`, `[PLACEHOLDER: prints URL for this work]` | The Etsy listing of the original and the page where prints of the work are ordered. They fill the **Original on Etsy** and **Prints** buttons on the work's page. Delete a line to remove its button. |
 
-**The portrait on the About page** is optional and hidden by default, because the artist is
-anonymous. To show one, put a single image file in `src/content/about/` and describe it in the
-`portraitAlt` line of `src/content/about/index.md`. Remove the image to hide it again.
+**Beside the statement on the About page** hangs the featured work (whole, with its colours on the
+wall, and linking to its page). A portrait is optional and hidden by default, because the artist is
+anonymous. To show one in place of the work, put a single image file in `src/content/about/` and
+describe it in the `portraitAlt` line of `src/content/about/index.md`. Remove the image to bring the
+work back.
 
 **To find any placeholder left**, search the whole project for `[PLACEHOLDER` (in Visual Studio
 Code: **Edit → Find in Files**).
@@ -284,28 +286,40 @@ variable named `SITE_URL` with the value `https://www.yourdomain.com`, and redep
 | `src/content/about/index.md` | The artist statement (and the optional portrait). |
 | `src/styles/tokens.css` | Colours, type sizes and spacing (provisional design tokens). |
 | `astro.config.mjs` | Fonts, image quality and the site address. |
-| `src/pages/` | One file per page: `index.astro` (gallery), `works/[slug].astro` (artwork pages), `about.astro`, `contact.astro`, `privacy.astro`, `cookies.astro`, `legal.astro`, `404.astro`, plus the sitemap and robots.txt. |
-| `src/components/`, `src/layouts/`, `src/scripts/` | The building blocks of the pages, smooth scrolling and the full-screen viewer. |
+| `src/pages/` | One file per page: `index.astro` (gallery), `works/[slug].astro` (artwork pages), `about.astro`, `contact.astro`, `privacy.astro`, `cookies.astro`, `legal.astro`, `404.astro`, plus the sitemap, robots.txt and the link preview images (`social/`). |
+| `src/components/`, `src/layouts/`, `src/lib/`, `src/scripts/` | The building blocks of the pages, the link previews, smooth scrolling, the opening, the room light and the full-screen viewer. |
 | `public/` | The browser-tab icons. |
 | `vercel.json` | Tells browsers to keep the site's fingerprinted files cached, so repeat visits are fast. |
 
 **How the site behaves**, for reference: it works fully with JavaScript switched off; it sets no
-cookies and loads nothing from other companies; every image keeps its own proportions and is never
-cropped; tapping or clicking an artwork opens it full screen, where it can be zoomed. The menu
-(Gallery, About, Contact) stays at the top of the screen on every page, phones included; a soft
-shade appears behind it only once the page has scrolled, so it never darkens a work at rest.
+cookies, stores nothing in the browser and loads nothing from other companies; every image keeps its
+own proportions and is never cropped; tapping or clicking an artwork opens it full screen, where it
+can be zoomed. The menu (Gallery, About, Contact) stays at the top of the screen on every page,
+phones included; a soft shade appears behind it only once the page has scrolled, so it never
+darkens a work at rest. While the gallery scrolls, the number of the work in view appears beside
+the name in the menu, like a catalogue folio ("II / III"; hidden on the narrowest phones).
 
-The gallery opens on the featured work with the name set around it. The colours at the edges of
-each work wash softly onto the wall around it, and the room itself takes on the colour of the work
-in view: a soft light in the work's own colour sits behind it and glides to the next work as the
-page scrolls. On a work's page it lights the wall behind the work, like a spotlight. As the page scrolls, each work comes out of the
-dark as it reaches the middle of the screen and glides a little faster than the page, as if
-hanging in front of the wall. Upright works hang left or right
-in turn beside their title and number; wide works take the full width. Each work is sized so that
-it fits on screen with its title, below the menu, and it settles gently into place: when scrolling
-stops close to a work, the page glides until the work sits in the middle of the screen. Stop
-between two works and the page stays where it is. The bottom of the page is a resting place too,
-so scrolling on past the last work always reaches the footer.
+The gallery opens on the featured work with the name set around it. The first time a visitor
+arrives on it, the opening is staged, in about two seconds: the room is dark, the wall light rises,
+the work lights up and its colours glow onto the wall, the name writes itself, then the menu
+appears. Any scroll, tap, click or key press plays the rest at once. Nothing is stored to know
+whether it has been seen: it plays on arriving from outside the site, not on a reload, not when
+coming back through the browser's history or from another page of the site. At the bottom of the
+opening screen, a thin line with a light sliding down it shows that the page goes on; it fades as
+the page scrolls.
+
+The colours at the edges of each work wash softly onto the wall around it, and the room itself
+takes on the colour of the work in view: a soft light in the work's own colour sits behind it and
+glides to the next work as the page scrolls. On a work's page it lights the wall behind the work,
+like a spotlight. Each work first shows as its own soft colours while its image loads, and the image
+then fades in over them instead of appearing abruptly. As the page scrolls, each work comes out of
+the dark as it reaches the middle of the screen and glides a little faster than the page, as if
+hanging in front of the wall. Upright works hang left or right in turn beside their title and
+number; wide works take the full width. Each work is sized so that it fits on screen with its
+title, below the menu, and it settles gently into place: when scrolling stops close to a work, the
+page glides until the work sits in the middle of the screen. Stop between two works and the page
+stays where it is. The bottom of the page is a resting place too, so scrolling on past the last work
+always reaches the footer.
 
 A work page shows everything on one screen, with nothing to scroll, whatever the screen (phones
 held upright or sideways, tablets, computers): the work itself, as large as the space allows, its
@@ -316,10 +330,19 @@ line, then availability). A click on the empty background, or the Escape key, re
 gallery at the same place; the Gallery link in the menu does the same without JavaScript. Clicking
 the work itself opens it full screen, where it can be zoomed.
 
+The About page is laid out like a page of a catalogue: the name set large, the statement in a
+narrow column, and beside it the featured work with its colours on the wall. The Contact page sets
+the email address large, with the Etsy shop and the print shop as ruled lines below it.
+
 Moving around the site never reloads the page: each page is fetched shortly before it is needed
 (as soon as a link to it has been on screen for a moment) and swapped in while the old one fades
 out. In browsers that support page transitions (such as Chrome and Edge), the work you click grows
-into its own page and back again, its colour bleed travelling with it; other browsers change page
-at once. All movement (smooth scrolling, the pull towards each work, the light and parallax
-effects, the page transitions) is switched off for visitors whose device asks for reduced motion.
-Browsers that do not support an effect simply show the page without it.
+into its own page and back again, its colour bleed travelling with it, while the rest of the page
+dims like the house lights of a theatre and comes back up; other browsers change page at once. All
+movement (smooth scrolling, the pull towards each work, the opening, the drifting grain, the light
+and parallax effects, the page transitions) is switched off for visitors whose device asks for
+reduced motion. Browsers that do not support an effect simply show the page without it.
+
+When a link to the site is shared (in a message or on a social network), the preview image shows
+the work on the dark wall, with its colours and the name, in the site's own look. These images are
+made automatically when the site is built: one per work (the gallery uses the featured work).

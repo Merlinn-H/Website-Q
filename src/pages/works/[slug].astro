@@ -44,7 +44,7 @@ if (originalOnOffer && etsyUrl) shopLinks.push({ label: 'Original on Etsy', href
 if (printsUrl) shopLinks.push({ label: 'Prints', href: printsUrl });
 
 const description = `${[title, year].join(', ')}. ${[medium, dimensions].filter(Boolean).join(', ')}.`;
-const socialImage = await socialImageFor(work);
+const socialImage = socialImageFor(work);
 ---
 
 <BaseLayout title={title} description={description} socialImage={socialImage} focus>
