@@ -1,7 +1,7 @@
 import sharp from 'sharp';
 import { site } from '../site.config';
 import { lightColour } from './light-colour';
-import { projectFile } from './project-file.mjs';
+import { plainFont } from './font-file.mjs';
 import type { Work } from './works';
 
 // Link previews in the site's look (1200 x 630 JPEG, made once at build time): the work, whole,
@@ -24,7 +24,7 @@ const ROOM_LIGHT = 0.24; // --room-light
 const WALL_LIGHT = 0.05; // --wall-light
 const VIGNETTE = 0.6; // --vignette
 const NAME_SIZE = 80;
-const NAME_FONT = 'node_modules/@fontsource/instrument-serif/files/instrument-serif-latin-400-italic.woff2';
+const NAME_FONT = 'node_modules/@fontsource/instrument-serif/files/instrument-serif-latin-400-italic.woff';
 
 const clamp = (value: number, low: number, high: number) => Math.min(Math.max(value, low), high);
 
@@ -118,7 +118,7 @@ const escape = (text: string) =>
 // The name in the site's italic, in the bottom right corner (clear of the work and its colours).
 // Left out if the font cannot be used.
 async function name() {
-  const fontfile = projectFile(NAME_FONT);
+  const fontfile = plainFont(NAME_FONT);
   if (!fontfile) return undefined;
   try {
     const { data, info } = await sharp({
