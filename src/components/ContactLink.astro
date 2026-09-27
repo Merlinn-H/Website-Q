@@ -1,0 +1,13 @@
+---
+import { isPlaceholder } from '../lib/placeholder';
+
+interface Props {
+  /** An email address, shown as a link; anything else (a placeholder, a postal address) as text. */
+  value: string;
+}
+
+const { value } = Astro.props;
+const isEmail = !isPlaceholder(value) && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+---
+
+{isEmail ? <a href={`mailto:${value}`}>{value}</a> : value}

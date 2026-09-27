@@ -1,8 +1,9 @@
-# Kenning: portfolio website
+# Artist portfolio website
 
-The portfolio site for Kenning. It has a gallery, one page per artwork, an About page, a
-Contact page and three legal pages (Privacy, Cookies, Legal). It sells nothing itself: it links out
-to Etsy for original works and to the print shop for prints.
+The portfolio site of an artist, whose name is set in one place (section 4, "The artist name").
+It has a gallery, one page per artwork, an About page, a Contact page and three legal pages
+(Privacy, Cookies, Legal). It sells nothing itself: it links out to Etsy for original works and to
+the print shop for prints.
 
 It is built with [Astro](https://astro.build) and is designed to be hosted on
 [Vercel](https://vercel.com). You do not need to know how to code to add works or fill in the
@@ -172,8 +173,10 @@ To use a different font:
 ### The artist name
 
 The name shown in the header, on the gallery, on the About page, in the footer and on the link
-previews is set in **`src/site.config.ts`** (`name: 'Kenning'`). On the gallery's opening screen,
-a one-word name sits large at the bottom right of the featured work; with two or more words, the
+previews is set once, in **`src/site.config.ts`** (the line `const name = '...'`). Change it
+there and the whole site follows, including the public email address and the name on the legal
+pages (see section 5). On the gallery's opening screen, a
+one-word name sits large at the bottom right of the featured work; with two or more words, the
 first sits at the top left and the rest at the bottom right.
 
 ## 5. Filling in the placeholders
@@ -185,18 +188,21 @@ are real), so nothing breaks in the meantime.
 | Where | Placeholder | What to write |
 | --- | --- | --- |
 | `src/site.config.ts` | `[PLACEHOLDER: one-sentence site description for search engines]` | One sentence shown in search results and link previews. |
-| `src/site.config.ts` | `[PLACEHOLDER: contact email]` | The public email address. It becomes a clickable email link. |
 | `src/site.config.ts` | `[PLACEHOLDER: Etsy shop URL]` | The full address of the Etsy shop. |
 | `src/site.config.ts` | `[PLACEHOLDER: Gelato prints URL]` | The full address where prints can be ordered. |
-| `src/site.config.ts` | `[PLACEHOLDER: trading name / legal identity]` | Who operates the site, for the Legal page. |
-| `src/site.config.ts` | `[PLACEHOLDER: contact]` | Contact details for the Legal page. |
-| `src/site.config.ts` | `[PLACEHOLDER: data controller name / legal identity]` | Who is responsible for personal data, for the Privacy page. |
-| `src/site.config.ts` | `[PLACEHOLDER: data controller contact details]` | How to reach them, for the Privacy page. |
 | `src/content/about/index.md` | `[PLACEHOLDER: artist statement]` | The statement, below the second `---` line. Separate paragraphs with an empty line. |
 | `src/content/about/index.md` | `[PLACEHOLDER: portrait description, read aloud by screen readers]` | Only needed if you add a portrait (see below). |
 | `src/pages/privacy.astro` | `[PLACEHOLDER: server log retention period under the Vercel plan in use]` | How long Vercel keeps server logs for your plan. |
 | `src/content/works/work-01/`, `work-02/`, `work-03/` (`index.md`) | `[PLACEHOLDER: title]`, `[PLACEHOLDER: year]`, `[PLACEHOLDER: medium]`, `[PLACEHOLDER: dimensions]`, `[PLACEHOLDER: available, sold or not-for-sale]` | The details of each work (see section 3). |
 | `src/content/works/work-01/`, `work-02/`, `work-03/` (`index.md`) | `[PLACEHOLDER: Etsy listing URL]`, `[PLACEHOLDER: prints URL for this work]` | The Etsy listing of the original and the page where prints of the work are ordered. They fill the **Original on Etsy** and **Prints** buttons on the work's page. Delete a line to remove its button. |
+
+**The email address and the legal details follow the artist name.** In `src/site.config.ts`, the
+public address is made from the name: `contact@`, then the name in lower case (letters and digits
+only), then `.co.uk`. An artist called Example Name gets `contact@examplename.co.uk`. It is shown on the Contact page, and the
+Legal and Privacy pages give the artist name, with that address, as the person who runs the site
+and is responsible for personal data. Before publishing, make sure the domain is yours and the
+mailbox works: if the domain belongs to someone else, messages will not reach you (and could reach
+them). To use another address, write it in place of the generated one; the file explains how.
 
 **Beside the statement on the About page** hangs the featured work (whole, with its colours on the
 wall, and linking to its page). A portrait is optional and hidden by default, because the artist is
@@ -213,7 +219,10 @@ The Privacy, Cookies and Legal pages are templates written for UK law (the UK GD
 Protection Act 2018). They describe exactly what this site does today: no cookies, no analytics, no
 forms, no data collected by the site itself, hosting by Vercel (which processes server logs,
 including IP addresses), and links to Etsy and Gelato, which have their own policies. Have them
-reviewed before publishing. If you later add anything that collects data (analytics, a newsletter,
+reviewed before publishing. They name only the artist name as the person running the site: under
+UK rules, a sole trader is normally expected to give their legal name and a postal address as well
+(a limited company gives its company name, number and registered office instead), so have this
+point checked in the review. If you later add anything that collects data (analytics, a newsletter,
 a form, embedded videos), these pages must be updated.
 
 A banner at the top of each of the three pages reads "Template: to be reviewed before

@@ -1,5 +1,6 @@
 ---
 import LegalLayout from '../layouts/LegalLayout.astro';
+import ContactLink from '../components/ContactLink.astro';
 import { site } from '../site.config';
 
 const { controllerIdentity, controllerContact } = site.legal;
@@ -17,7 +18,7 @@ const { controllerIdentity, controllerContact } = site.legal;
   <h2>Who is responsible</h2>
   <p>
     The data controller for this website is {controllerIdentity}.
-    You can contact the controller at {controllerContact}.
+    You can contact the controller at <ContactLink value={controllerContact} />.
   </p>
 
   <h2>What this website does not do</h2>
@@ -70,7 +71,7 @@ const { controllerIdentity, controllerContact } = site.legal;
     <li>data portability, where it applies.</li>
   </ul>
   <p>
-    To exercise any of these rights, contact the controller at {controllerContact}. Because the website
+    To exercise any of these rights, contact the controller at <ContactLink value={controllerContact} />. Because the website
     itself holds no personal data, a request can only concern the server logs processed by Vercel.
   </p>
 

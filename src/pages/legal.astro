@@ -1,5 +1,6 @@
 ---
 import LegalLayout from '../layouts/LegalLayout.astro';
+import ContactLink from '../components/ContactLink.astro';
 import { site } from '../site.config';
 
 const { identity, contact } = site.legal;
@@ -11,7 +12,7 @@ const year = new Date().getFullYear();
 
   <h2>Website operator</h2>
   <p>This website is operated by {identity}.</p>
-  <p>Contact: {contact}</p>
+  <p>Contact: <ContactLink value={contact} /></p>
 
   <h2>Copyright</h2>
   <p>
