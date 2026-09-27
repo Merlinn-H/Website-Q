@@ -142,6 +142,8 @@ button {
 
 /* Utilities ------------------------------------------------------------------------------ */
 
+/* Text for screen readers only. It is set in the interface font, which every page loads anyway:
+ * a hidden heading in the display face would otherwise download a font file just for itself. */
 .visually-hidden {
   position: absolute !important;
   width: 1px;
@@ -152,6 +154,7 @@ button {
   clip-path: inset(50%);
   white-space: nowrap;
   border: 0;
+  font-family: var(--font-ui);
 }
 
 .nowrap {

@@ -1,5 +1,6 @@
 // Room light (see .room-light in global.css): the wall takes the colour of the work in view. Each
-// work's colour is read once from the tiny copy made for its colour bleed (data-light on .bleed).
+// work's colour is read once from the tiny copy made for its colour bleed, which is written into
+// the page (the bleed's border-image-source, see Bleed.astro): no request is needed.
 // In the gallery the light follows the work crossing the middle of the screen; on a page with a
 // single work (a work's page, About) it sits behind that work; on pages without works it fades out.
 // The work in view also sets the folio in the menu.
@@ -8,7 +9,7 @@ import { lightColour } from '../lib/light-colour';
 
 const colours = new Map<string, Promise<string | null>>();
 
-// The pixels of the tiny copy, read straight from the PNG file (8-bit RGB or RGBA, as Astro makes
+// The pixels of the tiny copy, read straight from the PNG (8-bit RGB or RGBA, as Bleed.astro makes
 // it). Unlike drawing it on a canvas, this never holds up the page: the browser inflates the data
 // in the background, and there are only a few dozen pixels to unfilter.
 async function pixelsOf(src: string) {
@@ -77,10 +78,13 @@ const layer = () => document.querySelector<HTMLElement>('.room-light');
 
 let current: HTMLElement | undefined;
 
+// The tiny copy of a work, from its bleed's style: url("data:image/png;base64,...").
+const tinyOf = (bleed: HTMLElement) => /url\(["']?([^"')]+)/.exec(bleed.style.borderImageSource)?.[1];
+
 // Lights the room from a work: its colour, in a pool behind it and sized to it.
 async function lightFrom(bleed: HTMLElement) {
   const plate = bleed.closest<HTMLElement>('.plate');
-  const src = bleed.dataset.light;
+  const src = tinyOf(bleed);
   if (!plate || !src) return;
   const colour = await colourOf(src);
   const light = layer();
@@ -111,7 +115,7 @@ function watch() {
   observer?.disconnect();
   current = undefined;
   showFolio();
-  const bleeds = [...document.querySelectorAll<HTMLElement>('.bleed[data-light]')];
+  const bleeds = [...document.querySelectorAll<HTMLElement>('.bleed')];
 
   // No works on this page: the light fades out.
   if (!bleeds.length) {

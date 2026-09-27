@@ -1,5 +1,5 @@
 ---
-import { getImage } from 'astro:assets';
+import sharp from 'sharp';
 import type { Work } from '../lib/works';
 
 interface Props {
@@ -12,8 +12,10 @@ const { work } = Astro.props;
 // a whole stretch of that edge. CSS stretches its outermost rows and columns outwards on every
 // side, blurs them and fades them out, so the colours of the work's edges wash onto the page. It
 // always sits behind the work, never over it (see global.css). The same copy gives the room light
-// its colour (data-light, see src/scripts/light.ts).
-const tiny = await getImage({ src: work.image, width: 8, format: 'png' });
+// its colour (src/scripts/light.ts). It is written into the page itself (a few hundred bytes), so
+// the colours are there with the very first frame, before any image file has arrived.
+const tiny = await sharp(`.${work.imagePath}`).rotate().resize({ width: 8 }).toColourspace('srgb').png().toBuffer();
+const src = `data:image/png;base64,${tiny.toString('base64')}`;
 ---
 
-<span class="bleed" aria-hidden="true" data-light={tiny.src} style={`border-image-source: url(${tiny.src})`}></span>
+<span class="bleed" aria-hidden="true" style={`border-image-source: url(${src})`}></span>

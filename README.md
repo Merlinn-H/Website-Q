@@ -152,6 +152,11 @@ More settings in the same file control the atmosphere (`0` turns an effect off):
 None of them ever covers or changes the artwork itself: the bleed is drawn behind the work, from a
 tiny copy of it made automatically when the site is built.
 
+The file `src/lib/sizes.ts` repeats a few of these spacing values (`--gutter`, `--frame-gap`,
+`--header-h`, `--bleed-size-vertical`) to work out how wide each work is shown, so that every
+screen downloads an image file of the right size. If you change one of them, change it there too.
+Nothing breaks if you forget: some screens simply download a slightly larger (or smaller) file.
+
 ### Fonts
 
 The two fonts are **Instrument Serif** (the serif for the name, titles and statement) and its
@@ -302,7 +307,8 @@ variable named `SITE_URL` with the value `https://www.yourdomain.com`, and redep
 
 **How the site behaves**, for reference: it works fully with JavaScript switched off; it sets no
 cookies, stores nothing in the browser and loads nothing from other companies; every image keeps its
-own proportions and is never cropped; tapping or clicking an artwork opens it full screen, where it
+own proportions and is never cropped, and each screen downloads a copy of it just large enough for
+its size and sharpness (from 400 to 2560 pixels wide); tapping or clicking an artwork opens it full screen, where it
 can be zoomed. The menu (Gallery, About, Contact) stays at the top of the screen on every page,
 phones included; a soft shade appears behind it only once the page has scrolled, so it never
 darkens a work at rest. While the gallery scrolls, the number of the work in view appears beside
@@ -344,8 +350,9 @@ narrow column, and beside it the featured work with its colours on the wall. The
 the email address large, with the Etsy shop and the print shop as ruled lines below it.
 
 Moving around the site never reloads the page: each page is fetched shortly before it is needed
-(as soon as a link to it has been on screen for a moment) and swapped in while the old one fades
-out. In browsers that support page transitions (such as Chrome and Edge), the work you click grows
+(as soon as a link to it has been on screen for a moment, quietly, after the images; the legal
+pages in the footer only when a link to them is pointed at or touched) and swapped in while the old
+one fades out. In browsers that support page transitions (such as Chrome and Edge), the work you click grows
 into its own page and back again, its colour bleed travelling with it, while the rest of the page
 dims like the house lights of a theatre and comes back up; other browsers change page at once. All
 movement (smooth scrolling, the pull towards each work, the opening, the drifting grain, the light

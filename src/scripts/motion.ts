@@ -1,9 +1,10 @@
-import Lenis from 'lenis';
-import Snap from 'lenis/snap';
+import type Lenis from 'lenis';
+import type Snap from 'lenis/snap';
 
 // Smooth scrolling (Lenis), for a mouse or trackpad and only for visitors who have not asked for
 // reduced motion; it switches off or on again if either changes while the page is open. Touch
-// screens keep their own scrolling.
+// screens keep their own scrolling, and never download the library: it is fetched only when it
+// is used.
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 const finePointer = matchMedia('(pointer: fine)');
 let lenis: Lenis | null = null;
@@ -39,16 +40,28 @@ function placeSnaps() {
   }
 }
 
-function applyMotionPreference() {
-  if (reducedMotion.matches || !finePointer.matches) {
+const wanted = () => !reducedMotion.matches && finePointer.matches;
+
+async function applyMotionPreference() {
+  if (!wanted()) {
     snap?.destroy();
     lenis?.destroy();
     snap = lenis = null;
-  } else if (!lenis) {
-    lenis = new Lenis({ autoRaf: true });
-    snap = new Snap(lenis, { type: 'proximity', distanceThreshold: '30%', debounce: 220 });
-    placeSnaps();
+    return;
   }
+  if (lenis) return;
+  let library;
+  try {
+    library = await Promise.all([import('lenis'), import('lenis/snap')]);
+  } catch {
+    return; // Not reachable (offline, say): the page keeps its own scrolling.
+  }
+  // The preference may have changed, or smooth scrolling started, while the library loaded.
+  if (lenis || !wanted()) return;
+  const [{ default: SmoothScroll }, { default: SnapPoints }] = library;
+  lenis = new SmoothScroll({ autoRaf: true });
+  snap = new SnapPoints(lenis, { type: 'proximity', distanceThreshold: '30%', debounce: 220 });
+  placeSnaps();
 }
 
 applyMotionPreference();

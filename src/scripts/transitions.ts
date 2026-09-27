@@ -1,7 +1,9 @@
 // Moving between pages. Astro's client router (see BaseLayout.astro) swaps the next page in
 // without reloading, while the old page cross-fades into it. On top of that:
 // - pages are fetched shortly before they are needed (a link on screen for a moment, pointed at,
-//   focused or touched) and kept for the visit, so a change of page starts at once;
+//   focused or touched) and kept for the visit, so a change of page starts at once. Links in the
+//   footer (the legal pages, rarely visited) are only fetched when pointed at, focused or touched,
+//   and pages fetched just because their link is on screen never compete with the images;
 // - the work that was clicked grows into its own page, its colour bleed travelling with it, and
 //   glides back into place on the way back, while the rest of the page dims like house lights.
 //   Only that work and its bleed carry the shared names "artwork" and "artwork-bleed" (a work page
@@ -20,12 +22,12 @@ const IMAGE_WAIT = 400;
 const pages = new Map<string, Promise<string | undefined>>();
 
 // A page of the site, fetched once per visit. Anything unusual (an error, a redirect, not a
-// page) is left to the router's own loading.
-function fetchPage(href: string) {
+// page) is left to the router's own loading. `low` for pages fetched only in case.
+function fetchPage(href: string, priority: RequestPriority = 'auto') {
   const url = href.split('#')[0];
   let page = pages.get(url);
   if (!page) {
-    page = fetch(url)
+    page = fetch(url, { priority })
       .then((response) =>
         response.ok && !response.redirected && response.headers.get('content-type')?.startsWith('text/html')
           ? response.text()
@@ -46,7 +48,8 @@ const isPageLink = (link: HTMLAnchorElement) =>
   !link.hasAttribute('download') &&
   !link.hasAttribute('data-astro-reload');
 
-// Links on screen for a moment, except when the visitor saves data or the connection is slow.
+// Links on screen for a moment, except in the footer, and not when the visitor saves data or the
+// connection is slow.
 const slowConnection = () => {
   const connection = (navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } })
     .connection;
@@ -60,7 +63,7 @@ const onScreenLinks = new IntersectionObserver((entries) => {
     if (!isIntersecting) continue;
     const timer = window.setTimeout(() => {
       onScreenLinks.unobserve(target);
-      fetchPage((target as HTMLAnchorElement).href);
+      fetchPage((target as HTMLAnchorElement).href, 'low');
     }, 300);
     timers.set(target, timer);
   }
@@ -70,7 +73,7 @@ function watchLinks() {
   onScreenLinks.disconnect();
   if (slowConnection()) return;
   for (const link of document.querySelectorAll<HTMLAnchorElement>('a[href]')) {
-    if (isPageLink(link)) onScreenLinks.observe(link);
+    if (isPageLink(link) && !link.closest('.site-footer')) onScreenLinks.observe(link);
   }
 }
 

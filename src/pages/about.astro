@@ -7,6 +7,7 @@ import ArtworkPicture from '../components/ArtworkPicture.astro';
 import Bleed from '../components/Bleed.astro';
 import { site } from '../site.config';
 import { getFeatured, getWorks, workPath } from '../lib/works';
+import { aboutSizes } from '../lib/sizes';
 
 const about = await getEntry('about', 'index');
 if (!about) throw new Error('src/content/about/index.md is missing.');
@@ -63,7 +64,7 @@ const letters = Math.max(...site.name.trim().split(/\s+/).map((word) => word.len
                 <ArtworkPicture
                   work={work}
                   priority
-                  sizes={`(min-width: 56em) min(40vw, calc((100vh - 14rem) * ${ratio(work.ratio)})), min(calc(100vw - 2rem), calc((100vh - 14rem) * ${ratio(work.ratio)}))`}
+                  sizes={aboutSizes(work.ratio)}
                 />
               </a>
             </div>
@@ -118,7 +119,7 @@ const letters = Math.max(...site.name.trim().split(/\s+/).map((word) => word.len
   }
 
   /* The work keeps its proportions and fits the screen below the menu, with room around it for
-     its colours. */
+     its colours (its width is repeated for its image in src/lib/sizes.ts: keep both in step). */
   .about-work {
     --plate-h: max(14rem, 100svh - var(--page-top) - 2 * var(--bleed-size-vertical) - 6rem);
 

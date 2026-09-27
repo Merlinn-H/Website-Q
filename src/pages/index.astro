@@ -5,6 +5,7 @@ import Bleed from '../components/Bleed.astro';
 import { site } from '../site.config';
 import { getFeatured, getWorks, workPath } from '../lib/works';
 import { socialImageFor } from '../lib/social';
+import { heroSizes, sequenceSizes } from '../lib/sizes';
 
 const works = await getWorks();
 const featured = getFeatured(works);
@@ -53,7 +54,7 @@ const letters = Math.max(...nameParts.map((part) => part.text.length));
             <ArtworkPicture
               work={featured}
               priority
-              sizes={`min(calc(100vw - 2rem), calc((100vh - 7.5rem) * ${ratio(featured.ratio)}))`}
+              sizes={heroSizes(featured.ratio, letters, nameParts.length, featured.shape === 'upright')}
             />
           </a>
         </div>
@@ -80,11 +81,7 @@ const letters = Math.max(...nameParts.map((part) => part.text.length));
                 <a class="work-link" href={workPath(work)} data-artwork-link>
                   <ArtworkPicture
                     work={work}
-                    sizes={
-                      work.shape === 'upright'
-                        ? `(min-width: 64em) min(58vw, calc((100vh - 10rem) * ${ratio(work.ratio)})), min(calc(100vw - 2rem), calc(max(55vh, 100vh - 19rem) * ${ratio(work.ratio)}))`
-                        : `min(calc(100vw - 2rem), calc(max(55vh, 100vh - 19rem) * ${ratio(work.ratio)}))`
-                    }
+                    sizes={sequenceSizes(work.ratio, work.shape === 'upright')}
                   />
                 </a>
               </div>
@@ -109,7 +106,8 @@ const letters = Math.max(...nameParts.map((part) => part.text.length));
      wall, and the name is set around it: a one-word name bottom right; otherwise first word top
      left, the rest bottom right. Every size below is worked out from the screen size, the work's
      proportions, the space kept around it (--frame-gap) and the length of the name, so nothing
-     moves while loading and the name can never touch the work.
+     moves while loading and the name can never touch the work. The widths of the works are
+     repeated for their images in src/lib/sizes.ts: keep both in step.
      - stack: the name sits above and/or below the work (phones, and wide works).
      - sides: on wide screens an upright work takes the full height and the name sits beside it.
      --------------------------------------------------------------------------------------- */

@@ -6,6 +6,7 @@ import Bleed from '../../components/Bleed.astro';
 import Viewer from '../../components/Viewer.astro';
 import { availability, getWorks, workPath, type Work } from '../../lib/works';
 import { socialImageFor } from '../../lib/social';
+import { workSizes } from '../../lib/sizes';
 import { isPlaceholder } from '../../lib/placeholder';
 
 export async function getStaticPaths() {
@@ -63,7 +64,7 @@ const socialImage = socialImageFor(work);
           <ArtworkPicture
             work={work}
             priority
-            sizes={`(min-width: 48em) and (min-aspect-ratio: 1/1) min(calc(100vw - 30rem), calc((100vh - 8rem) * ${ratio})), min(calc(100vw - 2rem), calc(max(6rem, 100vh - 24rem) * ${ratio}))`}
+            sizes={workSizes(work.ratio)}
           />
           <span class="visually-hidden">, open full-screen view</span>
         </a>
@@ -166,7 +167,7 @@ const socialImage = socialImageFor(work);
      it; on phones and tall screens it sits under the work. Text and spacing tighten on short
      screens. The work's box is worked out from the space left for it, so it never moves while
      loading. Should a screen be too small for all of it, the page scrolls rather than hide
-     anything.
+     anything. The work's width is repeated for its image in src/lib/sizes.ts: keep both in step.
      --------------------------------------------------------------------------------------- */
   .work-page {
     display: grid;
